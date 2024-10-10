@@ -10,18 +10,61 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-sm bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
-            <a class="navbar-brand">Voting App</a>
-            <div class="d-flex">
-                <button class="btn btn-outline-success" type="submit">Registration</button>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#logonModal">
-                    Logon
-                </button>
+            <a class="navbar-brand" href="#">Voting App</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler"
+                aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarToggler">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" id="showRegForm" href="#" data-bs-toggle="modal"
+                            data-bs-target="#regModal">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="showLogonForm" href="#" data-bs-toggle="modal"
+                            data-bs-target="#logonModal">Log-on</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
-
+    <!-- Registration Modal -->
+    <div class="modal fade" id="regModal" tabindex="-1" aria-labelledby="regModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="regModalLabel">Registration</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="inputUsername">Username</label>
+                            <input type="text" class="form-control" id="regUsername" placeholder="Enter username"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputPassword1">Password</label>
+                            <input type="password" class="form-control" id="regPassword1" placeholder="Password"
+                                required>
+                        </div>
+                        <div class="form-group invisible">
+                            <label for="inputPassword2">Re-enter password</label>
+                            <input type="password" class="form-control" id="regPassword2"
+                                placeholder="Password"><span></span>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="registerSubmit" disabled>Register</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Logon Modal -->
     <div class="modal fade" id="logonModal" tabindex="-1" aria-labelledby="logonModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -34,15 +77,15 @@
                     <form>
                         <div class="form-group">
                             <label for="inputUsername">Username</label>
-                            <input type="text" class="form-control" id="inputUsername" placeholder="Enter username">
+                            <input type="text" class="form-control" id="loginUsername" placeholder="Enter username">
                         </div>
                         <div class="form-group">
                             <label for="inputPassword">Password</label>
-                            <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+                            <input type="password" class="form-control" id="loginPassword" placeholder="Password">
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" id="login">Log-in</button>
+                            <button type="submit" class="btn btn-primary" id="loginSubmit">Log-in</button>
                         </div>
                     </form>
                 </div>
@@ -50,6 +93,7 @@
         </div>
     </div>
 
+    <script type="module" src="./main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
