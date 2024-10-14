@@ -5,11 +5,13 @@ const generateValidateErrorList = (event, result) => {
         event.target.classList.add('is-invalid');
         if (ul === null) {
             ul = document.createElement('ul');
+            ul.classList.add('list-unstyled');
             event.target.after(ul);
         }
         ul.innerText = '';
         result.msg.forEach(msg => {
             const li = document.createElement('li');
+            li.classList.add('text-danger');
             li.innerText = msg;
             ul.appendChild(li);
         });

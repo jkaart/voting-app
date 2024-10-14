@@ -1,34 +1,49 @@
-import { users } from "./js/data/users.js";
-import {validateUsernameEventHandler, validatePasswordEventHandler, regFormEventHandler } from "./js/events/eventHandlers.js";
+import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regFormEventHandler, loginFormEventHandler, logoutEventHandler } from "./js/events/eventHandlers.js";
 import { comparePasswords } from "./js/functions/validatePassword.js";
 
 const showRegFormBtn = document.getElementById('showRegForm');
 
 const regForm = document.getElementById('regForm');
 
+const regFullName = document.getElementById('regFullName');
 const regUser = document.getElementById('regUsername');
 const regPassword1 = document.getElementById('regPassword1');
 const regPassword2 = document.getElementById('regPassword2');
 const regSubmitBtn = document.getElementById('regSubmit');
 
+const loginForm = document.getElementById('loginForm');
+const logoutBtn = document.getElementById('logout');
+
 const loginSubmitBtn = document.getElementById('loginSubmit');
 const loginPassword = document.getElementById('loginPassword');
 const loginUser = document.getElementById('loginUsername');
 
-regUser.addEventListener('input', (event) => {
-    const result = validateUsernameEventHandler(event)
+regFullName.addEventListener('input', (event) => {
+    const result = fullNameEventHandler(event);
     if (result) {
-        regSubmitBtn.setAttribute('disabled', '');
+        regUser.removeAttribute('disabled');
+    }
+    else {
+        regUser.setAttribute('disabled', '');
+    }
+    regSubmitBtn.setAttribute('disabled', '');
+});
+
+regUser.addEventListener('input', (event) => {
+    const result = usernameEventHandler(event)
+    if (result) {
         regPassword1.removeAttribute('disabled');
     }
     else {
         regPassword1.setAttribute('disabled', '');
     }
-})
+
+});
 
 regPassword1.addEventListener('input', (event) => {
-    regUser.setAttribute('disabled','')
-    const result = validatePasswordEventHandler(event);
+    regUser.setAttribute('disabled', '');
+    regFullName.setAttribute('disabled', '');
+    const result = passwordEventHandler(event);
     const pw2Field = event.target.parentElement.nextElementSibling.getElementsByTagName('input')[0];
     pw2Field.value = '';
     if (result) {
@@ -40,6 +55,7 @@ regPassword1.addEventListener('input', (event) => {
     }
     if (event.target.value.length === 0) {
         regUser.removeAttribute('disabled');
+        regFullName.removeAttribute('disabled');
     }
 });
 
@@ -49,6 +65,7 @@ regPassword2.addEventListener('input', (event) => {
     if (span === null) {
         span = document.createElement('span');
     }
+    span.classList.add('text-danger');
     span.textContent = result.msg;
     event.target.after(span);
 
@@ -58,17 +75,14 @@ regPassword2.addEventListener('input', (event) => {
         event.target.classList.add('is-valid');
     }
     else {
-        regSubmitBtn.setAttribute('disabled','');
+        regSubmitBtn.setAttribute('disabled', '');
         event.target.classList.remove('is-valid');
         event.target.classList.add('is-invalid');
         //span.remove();
     }
 });
 
-showRegFormBtn.addEventListener('click', () => {
-    regPassword1.value = '';
-    regPassword2.value = '';
-});
-
 regForm.addEventListener('submit', regFormEventHandler);
 
+loginForm.addEventListener('submit', loginFormEventHandler);
+logoutBtn.addEventListener('click', logoutEventHandler);
