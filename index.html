@@ -40,12 +40,12 @@
     <!-- Registration Modal -->
     <div class="modal fade" id="regModal" tabindex="-1" aria-labelledby="regModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div class="modal-content" id="regModalContent">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="regModalLabel">Registration</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" id="regFormModalBody">
                     <form id="regForm" class="has-validation">
                         <div class="form-group">
                             <label for="regName">Full name</label>
@@ -67,12 +67,17 @@
                             <input type="password" class="form-control" id="regPassword2"
                                 placeholder="Re-enter password" disabled>
                         </div>
-
                     </form>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" id="regFormModalFooter">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" id="regSubmit" disabled>Register</button>
+                    <button type="button" class="btn btn-primary" id="regSubmit" disabled>Register</button>
+                </div>
+                <div class="modal-body d-none" id="regInfoModalBody">
+                    <p id="regInfoMsg"></p>
+                </div>
+                <div class="modal-footer d-none" id="regInfoModalFooter">
+                    <button type="button" id="regInfoReturnBtn" class="btn btn-secondary">Return</button>
                 </div>
             </div>
         </div>

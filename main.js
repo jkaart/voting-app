@@ -1,4 +1,4 @@
-import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regFormEventHandler, loginFormEventHandler, logoutEventHandler } from "./js/events/eventHandlers.js";
+import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginFormEventHandler, logoutEventHandler } from "./js/events/eventHandlers.js";
 import { comparePasswords } from "./js/functions/validate.js";
 
 const showRegFormBtn = document.getElementById('showRegForm');
@@ -10,6 +10,7 @@ const regUser = document.getElementById('regUsername');
 const regPassword1 = document.getElementById('regPassword1');
 const regPassword2 = document.getElementById('regPassword2');
 const regSubmitBtn = document.getElementById('regSubmit');
+const regReturnBtn = document.getElementById('regInfoReturnBtn');
 
 const loginForm = document.getElementById('loginForm');
 const logoutBtn = document.getElementById('logout');
@@ -82,7 +83,16 @@ regPassword2.addEventListener('input', (event) => {
     }
 });
 
-regForm.addEventListener('submit', regFormEventHandler);
+regReturnBtn.addEventListener('click', () => {
+    document.getElementById('regFormModalBody').classList.remove('d-none');
+    document.getElementById('regFormModalFooter').classList.remove('d-none');
+
+    document.getElementById('regInfoModalBody').classList.add('d-none');
+    document.getElementById('regInfoModalFooter').classList.add('d-none');
+    regForm.reset();
+})
+
+regSubmitBtn.addEventListener('click', regSubmitEventHandler);
 
 loginForm.addEventListener('submit', loginFormEventHandler);
 logoutBtn.addEventListener('click', logoutEventHandler);

@@ -24,19 +24,63 @@ const passwordEventHandler = (event) => {
     return result.valid
 }
 
-const regFormEventHandler = (event) => {
+const regSubmitEventHandler = (event) => {
     event.preventDefault();
-    console.log(event.target)
     const userName = document.getElementById('regUsername').value;
-    const pwHash = md5(document.getElementById('regPassword1').value);
-    const name = document.getElementById('regFullName').value;
-    const user = new User(1, userName, pwHash, name);
-    console.log(user);
-    users.push(user);
-    //event.target.submit();
-    document.getElementById('regForm').reset();
-    bootstrap.Modal.getInstance(document.getElementById('regModal')).hide();
+    try {
+        const result = users.find(({ username }) => username === userName);
+        if (result) throw new Error(`${userName} is already registered!`);
+        else {
+            const pwHash = md5(document.getElementById('regPassword1').value);
+            const name = document.getElementById('regFullName').value;
+            const user = new User(1, userName, pwHash, name);
+            users.push(user);
+            //event.target.submit();
 
+            throw { name: 'Info', message: `${userName} is registered successfully!` };
+        }
+    }
+    catch ({ name, message }) {
+        const formModalBody = document.getElementById('regFormModalBody');
+        const formModalFooter = document.getElementById('regFormModalFooter');
+
+        const infoModalBody = document.getElementById('regInfoModalBody');
+        const infoModalFooter = document.getElementById('regInfoModalFooter');
+
+        document.getElementById('regInfoMsg').textContent = message;
+
+        formModalBody.classList.add('d-none');
+        formModalFooter.classList.add('d-none');
+        infoModalBody.classList.remove('d-none');
+        if (name === 'Error') {
+            infoModalFooter.classList.remove('d-none');
+        }
+        else {
+            setTimeout(() => {
+                bootstrap.Modal.getInstance(document.getElementById('regModal')).hide();
+                infoModalBody.classList.add('d-none');
+                formModalBody.classList.remove('d-none');
+                formModalFooter.classList.remove('d-none');
+            }, 3000);
+        }
+    }
+    finally {
+        document.getElementById('regForm').reset();
+        const inputs = document.getElementById('regForm').getElementsByTagName('input');
+        console.log(inputs)
+        for (let index = 0; index < inputs.length; index++) {
+            const element = inputs[index];
+            element.classList.remove('is-valid');
+            if (index === 0) {
+                element.removeAttribute('disabled');
+            }
+            else {
+                element.setAttribute('disabled', '');
+            }
+        }
+        document.getElementById('regSubmit').setAttribute('disabled', '');
+    }
+    console.log(users)
 };
 
 const loginFormEventHandler = (event) => {
@@ -89,4 +133,11 @@ const logoutEventHandler = (event) => {
 
 }
 
-export { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regFormEventHandler, loginFormEventHandler, logoutEventHandler }
+export {
+    fullNameEventHandler,
+    usernameEventHandler,
+    passwordEventHandler,
+    regSubmitEventHandler,
+    loginFormEventHandler,
+    logoutEventHandler
+}
