@@ -1,5 +1,5 @@
 import { users } from "../data/users.js";
-import { validateFullName, validateUsername, validatePassword } from "../functions/validatePassword.js";
+import { validateFullName, validateUsername, validatePassword } from "../functions/validate.js";
 import { generateValidateErrorList } from "../functions/validateErrorList.js";
 import { User } from '../classes/User.js';
 

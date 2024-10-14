@@ -1,5 +1,5 @@
 import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regFormEventHandler, loginFormEventHandler, logoutEventHandler } from "./js/events/eventHandlers.js";
-import { comparePasswords } from "./js/functions/validatePassword.js";
+import { comparePasswords } from "./js/functions/validate.js";
 
 const showRegFormBtn = document.getElementById('showRegForm');
 
