@@ -2,6 +2,7 @@ import { users } from "../data/users.js";
 import { validateFullName, validateUsername, validatePassword } from "../functions/validate.js";
 import { generateValidateErrorList } from "../functions/validateErrorList.js";
 import { User } from '../classes/User.js';
+import { notification } from "../functions/notification.js";
 
 const fullNameEventHandler = (event) => {
     const result = validateFullName(event.target.value);
@@ -33,7 +34,7 @@ const regSubmitEventHandler = (event) => {
         else {
             const pwHash = md5(document.getElementById('regPassword1').value);
             const name = document.getElementById('regFullName').value;
-            const user = new User(1, userName, pwHash, name);
+            const user = new User(users.length, userName, pwHash, name);
             users.push(user);
             //event.target.submit();
 
@@ -41,33 +42,15 @@ const regSubmitEventHandler = (event) => {
         }
     }
     catch ({ name, message }) {
-        const formModalBody = document.getElementById('regFormModalBody');
-        const formModalFooter = document.getElementById('regFormModalFooter');
+        notification(message);
 
-        const infoModalBody = document.getElementById('regInfoModalBody');
-        const infoModalFooter = document.getElementById('regInfoModalFooter');
-
-        document.getElementById('regInfoMsg').textContent = message;
-
-        formModalBody.classList.add('d-none');
-        formModalFooter.classList.add('d-none');
-        infoModalBody.classList.remove('d-none');
-        if (name === 'Error') {
-            infoModalFooter.classList.remove('d-none');
-        }
-        else {
-            setTimeout(() => {
-                bootstrap.Modal.getInstance(document.getElementById('regModal')).hide();
-                infoModalBody.classList.add('d-none');
-                formModalBody.classList.remove('d-none');
-                formModalFooter.classList.remove('d-none');
-            }, 3000);
+        if (name === 'Info') {
+            bootstrap.Modal.getInstance(document.getElementById('regModal')).hide();
         }
     }
     finally {
         document.getElementById('regForm').reset();
         const inputs = document.getElementById('regForm').getElementsByTagName('input');
-        console.log(inputs)
         for (let index = 0; index < inputs.length; index++) {
             const element = inputs[index];
             element.classList.remove('is-valid');
@@ -83,7 +66,7 @@ const regSubmitEventHandler = (event) => {
     console.log(users)
 };
 
-const loginFormEventHandler = (event) => {
+const loginEventHandler = (event) => {
     event.preventDefault();
     const userName = document.getElementById('loginUsername').value;
     const pwHash = md5(document.getElementById('loginPassword').value);
@@ -91,9 +74,9 @@ const loginFormEventHandler = (event) => {
     try {
         const result = users.find(({ username }) => username === userName);
 
-        if (!result) throw 'Wrong username!';
+        if (!result) throw new Error('Wrong username!');
 
-        else if (result.pwHash !== pwHash) throw 'Wrong password!';
+        else if (result.pwHash !== pwHash) throw new Error('Wrong password!');
 
         else {
             localStorage.setItem('username', userName);
@@ -112,24 +95,29 @@ const loginFormEventHandler = (event) => {
             // Hide logon button
             document.getElementById('showLogonForm').classList.add('d-none');
 
-            console.log(userName + ' is logged in');
+            throw { name: 'info', message: `${userName} is logged in successfully` };
+
         }
     }
-    catch (error) {
-        console.log(error);
+    catch ({name,message}) {
+        notification(message)
+    }
+    finally {
+        bootstrap.Modal.getInstance(document.getElementById('logonModal')).hide();
     }
 }
 
 const logoutEventHandler = (event) => {
-    (event) => {
-        localStorage.removeItem('username');
-        document.getElementById('logout').classList.add('d-none');
-        document.getElementById('showLogonForm').classList.remove('d-none');
-        document.getElementById('showRegForm').classList.remove('d-none');
-        console.log('logged out')
-
-        //window.location.reload();
-    }
+    localStorage.removeItem('username');
+    document.getElementById('logout').classList.add('d-none');
+    document.getElementById('showLogonForm').classList.remove('d-none');
+    document.getElementById('showRegForm').classList.remove('d-none');
+    const user = document.getElementById('user');
+    user.textContent = '';
+    user.classList.add('d-none');
+    console.log('logged out')
+    notification('logged out')
+    //window.location.reload();
 
 }
 
@@ -138,6 +126,6 @@ export {
     usernameEventHandler,
     passwordEventHandler,
     regSubmitEventHandler,
-    loginFormEventHandler,
+    loginEventHandler,
     logoutEventHandler
 }

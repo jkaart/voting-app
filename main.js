@@ -1,4 +1,4 @@
-import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginFormEventHandler, logoutEventHandler } from "./js/events/eventHandlers.js";
+import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler } from "./js/events/eventHandlers.js";
 import { comparePasswords } from "./js/functions/validate.js";
 
 const showRegFormBtn = document.getElementById('showRegForm');
@@ -94,5 +94,5 @@ regReturnBtn.addEventListener('click', () => {
 
 regSubmitBtn.addEventListener('click', regSubmitEventHandler);
 
-loginForm.addEventListener('submit', loginFormEventHandler);
+loginSubmitBtn.addEventListener('click', loginEventHandler);
 logoutBtn.addEventListener('click', logoutEventHandler);
