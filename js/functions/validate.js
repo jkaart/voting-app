@@ -53,7 +53,7 @@ const validatePassword = (password) => {
 
     let valid = false;
     let msg = [];
-    if (password.length <= 8) {
+    if (password.length < 8) {
         msg.push(errors[0]);
     };
     if (!/^(?=.*[a-z])/.test(password)) {
