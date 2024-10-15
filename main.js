@@ -1,7 +1,6 @@
 import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler } from "./js/events/eventHandlers.js";
+import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
-
-const showRegFormBtn = document.getElementById('showRegForm');
 
 const regForm = document.getElementById('regForm');
 
@@ -12,12 +11,9 @@ const regPassword2 = document.getElementById('regPassword2');
 const regSubmitBtn = document.getElementById('regSubmit');
 const regReturnBtn = document.getElementById('regInfoReturnBtn');
 
-const loginForm = document.getElementById('loginForm');
 const logoutBtn = document.getElementById('logout');
 
 const loginSubmitBtn = document.getElementById('loginSubmit');
-const loginPassword = document.getElementById('loginPassword');
-const loginUser = document.getElementById('loginUsername');
 
 regFullName.addEventListener('input', (event) => {
     const result = fullNameEventHandler(event);
@@ -96,3 +92,5 @@ regSubmitBtn.addEventListener('click', regSubmitEventHandler);
 
 loginSubmitBtn.addEventListener('click', loginEventHandler);
 logoutBtn.addEventListener('click', logoutEventHandler);
+
+notification({msg:'testi'})

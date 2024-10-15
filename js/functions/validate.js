@@ -9,7 +9,7 @@ const validateFullName = (fullName) => {
     if (fullName.length < 7) {
         msg.push(errors[0]);
     };
-    if (!/^[A-ZÅÄÖ][a-zåäö]{2,}\s[A-ZÅÄÖ][a-zåäö-]{2,}$/.test(fullName)){
+    if (!/^[A-ZÅÄÖ][a-zåäö]{2,}(?<=\w) (?=\w)[A-ZÅÄÖ][a-zåäö-]{2,}$/.test(fullName)) {
         msg.push(errors[1]);
     };
     if (msg.length === 0) {
@@ -31,7 +31,7 @@ const validateUsername = (username) => {
     if (username.length < 3) {
         msg.push(errors[0]);
     };
-    if (!/^[a-z]+$/g.test(username)){
+    if (!/^[a-z]+$/g.test(username)) {
         msg.push(errors[1]);
     };
     if (msg.length === 0) {

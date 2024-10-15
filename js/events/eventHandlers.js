@@ -42,7 +42,7 @@ const regSubmitEventHandler = (event) => {
         }
     }
     catch ({ name, message }) {
-        notification(message);
+        notification({name, msg:message});
 
         if (name === 'Info') {
             bootstrap.Modal.getInstance(document.getElementById('regModal')).hide();
@@ -79,11 +79,14 @@ const loginEventHandler = (event) => {
         else if (result.pwHash !== pwHash) throw new Error('Wrong password!');
 
         else {
-            localStorage.setItem('username', userName);
+            // Save login data to local storage
+            localStorage.setItem('VotingApp', JSON.stringify({userName: result.username, name: result.name}));
+            // Reset login form fields
+            document.getElementById('loginForm').reset()
 
-            //show logged user name
+            // Show full name of the logged in user
             const user = document.getElementById('user');
-            user.textContent = userName;
+            user.textContent = `Welcome ${JSON.parse(localStorage.getItem('VotingApp')).name}`;
             user.classList.remove('d-none');
 
             // hide register button
@@ -95,20 +98,19 @@ const loginEventHandler = (event) => {
             // Hide logon button
             document.getElementById('showLogonForm').classList.add('d-none');
 
-            throw { name: 'info', message: `${userName} is logged in successfully` };
-
+            throw { name: 'Info', message: `${result.name} has logged in successfully` };
         }
     }
     catch ({name,message}) {
-        notification(message)
+        notification({name, msg:message})
     }
     finally {
         bootstrap.Modal.getInstance(document.getElementById('logonModal')).hide();
     }
 }
 
-const logoutEventHandler = (event) => {
-    localStorage.removeItem('username');
+const logoutEventHandler = () => {
+    localStorage.removeItem('VotingApp');
     document.getElementById('logout').classList.add('d-none');
     document.getElementById('showLogonForm').classList.remove('d-none');
     document.getElementById('showRegForm').classList.remove('d-none');
@@ -116,7 +118,7 @@ const logoutEventHandler = (event) => {
     user.textContent = '';
     user.classList.add('d-none');
     console.log('logged out')
-    notification('logged out')
+    notification({name:'Info', msg:'You are logged out'})
     //window.location.reload();
 
 }
