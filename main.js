@@ -1,6 +1,9 @@
-import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler } from "./js/events/eventHandlers.js";
+import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, voteEventHandler} from "./js/events/eventHandlers.js";
 import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
+import { generateVoteCardArray } from "./js/functions/votesArray.js";
+import { VoteCard } from "./js/classes/VoteCard.js";
+import { votesData } from "./js/data/votes.js";
 
 const regForm = document.getElementById('regForm');
 
@@ -93,4 +96,8 @@ regSubmitBtn.addEventListener('click', regSubmitEventHandler);
 loginSubmitBtn.addEventListener('click', loginEventHandler);
 logoutBtn.addEventListener('click', logoutEventHandler);
 
-notification({msg:'testi'})
+const votes = generateVoteCardArray(votesData);
+votes.forEach(vote => {
+    vote.draw();
+    
+});

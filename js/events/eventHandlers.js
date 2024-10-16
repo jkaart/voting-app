@@ -1,4 +1,5 @@
 import { users } from "../data/users.js";
+import { votingSituations } from "../data/votes.js";
 import { validateFullName, validateUsername, validatePassword } from "../functions/validate.js";
 import { generateValidateErrorList } from "../functions/validateErrorList.js";
 import { User } from '../classes/User.js';
@@ -42,7 +43,7 @@ const regSubmitEventHandler = (event) => {
         }
     }
     catch ({ name, message }) {
-        notification({name, msg:message});
+        notification({ name, msg: message });
 
         if (name === 'Info') {
             bootstrap.Modal.getInstance(document.getElementById('regModal')).hide();
@@ -80,7 +81,7 @@ const loginEventHandler = (event) => {
 
         else {
             // Save login data to local storage
-            localStorage.setItem('VotingApp', JSON.stringify({userName: result.username, name: result.name}));
+            localStorage.setItem('VotingApp', JSON.stringify({ userName: result.username, name: result.name }));
             // Reset login form fields
             document.getElementById('loginForm').reset()
 
@@ -101,8 +102,8 @@ const loginEventHandler = (event) => {
             throw { name: 'Info', message: `${result.name} has logged in successfully` };
         }
     }
-    catch ({name,message}) {
-        notification({name, msg:message})
+    catch ({ name, message }) {
+        notification({ name, msg: message })
     }
     finally {
         bootstrap.Modal.getInstance(document.getElementById('logonModal')).hide();
@@ -118,9 +119,33 @@ const logoutEventHandler = () => {
     user.textContent = '';
     user.classList.add('d-none');
     console.log('logged out')
-    notification({name:'Info', msg:'You are logged out'})
+    notification({ name: 'Info', msg: 'You are logged out' })
     //window.location.reload();
 
+}
+
+const voteEventHandler = (event) => {
+    try {
+        console.log(event)
+        console.log(event.target)
+        const form = event.target.parentElement.previousElementSibling.querySelector('form');
+        const voteId = form.id.split('F')[0];
+        let voteValue = form.elements[`${voteId}VoteRadios`].value;
+        if (voteValue === '') throw new Error('Choose an option!')
+        if (votingSituations[voteId] === undefined) {
+            votingSituations[voteId] = {}
+        }
+        let votes = votingSituations[voteId];
+        if (isNaN(votes[voteValue])) {
+            votes[voteValue] = 0;
+        }
+        votes[voteValue] += 1;
+        throw { name: 'Info', message: 'Vote registered successfully!' }
+    }
+    catch ({ name, message }) {
+        notification({ name, msg: message });
+    }
+    console.log(votingSituations)
 }
 
 export {
@@ -129,5 +154,6 @@ export {
     passwordEventHandler,
     regSubmitEventHandler,
     loginEventHandler,
-    logoutEventHandler
+    logoutEventHandler,
+    voteEventHandler
 }
