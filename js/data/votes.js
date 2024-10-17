@@ -12,5 +12,4 @@ const votesData = [
         options: ['Talvi', 'Kevät', 'Kesä', 'Syksy'],
     }
 ]
-const votingSituations = {}
-export { votesData, votingSituations}
+export { votesData }

@@ -18,6 +18,8 @@ const logoutBtn = document.getElementById('logout');
 
 const loginSubmitBtn = document.getElementById('loginSubmit');
 
+const voteSubmitBtn = document.getElementById('voteSubmit');
+
 regFullName.addEventListener('input', (event) => {
     const result = fullNameEventHandler(event);
     if (result) {
@@ -97,7 +99,13 @@ loginSubmitBtn.addEventListener('click', loginEventHandler);
 logoutBtn.addEventListener('click', logoutEventHandler);
 
 const votes = generateVoteCardArray(votesData);
-votes.forEach(vote => {
-    vote.draw();
-    
+
+voteSubmitBtn.addEventListener('click', (event) => {
+    voteEventHandler(event, votes);
 });
+
+
+// votes.forEach(vote => {
+//     vote.draw();
+    
+// });

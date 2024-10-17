@@ -1,51 +1,91 @@
-const generateInputs = (options, voteId) => {
-    let inputs = ""
-    for (let index = 0; index < options.length; index++) {
-        const option = options[index];
-        inputs += `<div class="form-check">
-                    <input class="form-check-input" type="radio" name="${voteId}VoteRadios" id="vote${voteId}Radios${index}" value="${option}">
-                    <label class="form-check-label" for="vote${voteId}Radios${index}">${option}</label>
+import { voteEventHandler, openVoteModalEventHandler} from "../events/eventHandlers.js";
+import { calcPercentage } from "../functions/percentage.js";
+import { generateProgressBars } from "../functions/generators.js"
+
+const generateCardContainer = (voteId, title, description, options) => {
+    const progressBars = generateProgressBars(options, voteId);
+
+    const cardContainer = document.createElement('div');
+    cardContainer.classList.add('col');
+    cardContainer.innerHTML = `<div class="col">
+                <div class="text-bg-light card">
+                    <div class="card-body">
+                        <h5 class="card-title">${title}</h5>
+                        ${description}
+                        <div>
+                            ${progressBars}
+                        </div>
+                    </div>
+                    <div class='card-footer'>
+                    </div>
                 </div>
-                
-                `
+            </div>`
+    return cardContainer
+}
+
+const generateVotesObject = (options) => {
+    let votes = {};
+    for (const option of options) {
+        votes[option] = 0;
     }
-    return inputs
+    return votes
 }
 
 class VoteCard {
-    constructor(id, title, description, options, eventHandler) {
+    constructor(id, title, description, options) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.options = options;
-        this.eventHandler = eventHandler;
-        this.inputs = generateInputs(this.options,this.id);
+        this.totalVoteCount = 0;
+        this.votes = generateVotesObject(this.options);
         this.voteContainer = document.getElementById('voteContainer').children[0];
-        this.cardContainer = document.createElement('div');
+        this.cardContainer = this.draw();
+        this.voteBody = this.cardContainer.children[0].children[0].children[0].children[1]
+        this.voteCounterSpans = this.voteBody.querySelectorAll('span.voteCounter');
+        this.voteProgressDivs = this.voteBody.querySelectorAll('div.voteProgress');
+    }
+
+    get voteData() {
+        const voteData = {id:this.id, title:this.title, description:this.description, options:this.options, totalVoteCount:this.totalVoteCount}
+        return voteData
+    }
+
+    doVote(value) {
+        if (value === '') return false;
+        this.totalVoteCount += 1;
+        this.votes[value] += 1;
+        return true;
     }
 
     draw() {
-        this.cardContainer.classList.add('col');
-        this.cardContainer.innerHTML = 
-            `<div class="col">
-                <div class="text-bg-light card">
-                    <div class="card-body">
-                        <h5 class="card-title">${this.title}</h5>
-                        ${this.description}
-                        <form id="${this.id}Form">
-                        ${this.inputs}
-                        </form>
-                    </div>
-                    <div class='card-footer'>
-                        <button type="button" id="vote${this.id}BtnSubmit" class="btn btn-primary">Vote</button>
-                    </div>
-                </div>
-            </div>`;
-        
-        this.voteContainer.appendChild(this.cardContainer);
-        document.getElementById(`vote${this.id}BtnSubmit`).addEventListener('click', this.eventHandler);
+        const cardContainer = generateCardContainer(this.id, this.title, this.description, this.options);
+        cardContainer.addEventListener('click', ()=> {openVoteModalEventHandler(this.voteData)})
+        this.voteContainer.appendChild(cardContainer);
+        return cardContainer
     }
 
+    updateCounter() {
+        console.log(this.voteCounterSpans)
+        for (const [key, vote] of Object.values(this.votes).entries()) {
+            this.voteCounterSpans[key].textContent = vote;
+        }
+    }
+
+    updateProgressBars() {
+        for (const [key, vote] of Object.values(this.votes).entries()) {
+            const percent = calcPercentage(vote, this.totalVoteCount);
+            this.voteProgressDivs[key].setAttribute('aria-valuenow', percent);
+            this.voteProgressDivs[key].children[0].style.width = `${percent}%`
+            this.voteProgressDivs[key].children[0].textContent = `${percent}%`
+        }
+    }
+
+    updateAll() {
+        this.updateCounter()
+        this.updateProgressBars();
+        return true
+    }
 }
 
 export { VoteCard }

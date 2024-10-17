@@ -1,9 +1,11 @@
 import { users } from "../data/users.js";
-import { votingSituations } from "../data/votes.js";
 import { validateFullName, validateUsername, validatePassword } from "../functions/validate.js";
 import { generateValidateErrorList } from "../functions/validateErrorList.js";
 import { User } from '../classes/User.js';
 import { notification } from "../functions/notification.js";
+import { generateVoteForm } from "../functions/generators.js";
+
+const voteModal = document.getElementById('voteModal');
 
 const fullNameEventHandler = (event) => {
     const result = validateFullName(event.target.value);
@@ -124,28 +126,30 @@ const logoutEventHandler = () => {
 
 }
 
-const voteEventHandler = (event) => {
+const voteEventHandler = (event, votes) => {
     try {
-        console.log(event)
-        console.log(event.target)
         const form = event.target.parentElement.previousElementSibling.querySelector('form');
-        const voteId = form.id.split('F')[0];
-        let voteValue = form.elements[`${voteId}VoteRadios`].value;
-        if (voteValue === '') throw new Error('Choose an option!')
-        if (votingSituations[voteId] === undefined) {
-            votingSituations[voteId] = {}
+        const voteId = form.id.split('Vote')[1];
+        console.log(voteId)
+        const voteValue = form.elements[`vote${voteId}Radios`].value;
+        if (!votes[voteId].doVote(voteValue)) throw new Error('Chooose an option!');
+        if (votes[voteId].updateAll()) {
+            bootstrap.Modal.getOrCreateInstance(voteModal).hide();
+            throw { name: 'Info', message: 'Vote registered successfully!' };
         }
-        let votes = votingSituations[voteId];
-        if (isNaN(votes[voteValue])) {
-            votes[voteValue] = 0;
-        }
-        votes[voteValue] += 1;
-        throw { name: 'Info', message: 'Vote registered successfully!' }
     }
     catch ({ name, message }) {
         notification({ name, msg: message });
     }
-    console.log(votingSituations)
+}
+
+const openVoteModalEventHandler = (voteData) => {
+    const voteModalHeader = voteModal.children[0].children[0].children[0];
+    const voteModalBody = voteModal.children[0].children[0].children[1];
+    const inputs = generateVoteForm(voteData.options,voteData.id)
+    voteModalBody.innerHTML = inputs;
+    bootstrap.Modal.getOrCreateInstance(voteModal).show();
+
 }
 
 export {
@@ -155,5 +159,6 @@ export {
     regSubmitEventHandler,
     loginEventHandler,
     logoutEventHandler,
-    voteEventHandler
+    voteEventHandler,
+    openVoteModalEventHandler,
 }
