@@ -4,7 +4,6 @@ import { generateProgressBars } from "../functions/generators.js"
 
 const generateCardContainer = (voteData) => {
     const progressBars = generateProgressBars(voteData.options, voteData.id);
-    console.log(voteData)
     const cardContainer = document.createElement('div');
     cardContainer.classList.add('col');
     cardContainer.innerHTML = `<div class="col">
@@ -50,7 +49,6 @@ class VoteCard {
         this.voteCounterSpans = this.voteBody.querySelectorAll('span.voteCounter');
         this.voteProgressDivs = this.voteBody.querySelectorAll('div.voteProgress');
         this.totalVotesH5 = this.cardContainer.children[0].children[0].children[0].children[0].children[0]
-        console.log(this.totalVotesH5)
     }
 
     get voteData() {
@@ -67,7 +65,9 @@ class VoteCard {
 
     draw() {
         const cardContainer = generateCardContainer(this.voteData);
-        cardContainer.addEventListener('click', ()=> {openVoteModalEventHandler(this.voteData)})
+        cardContainer.addEventListener('click', ()=> {
+            
+            openVoteModalEventHandler(this.voteData)})
         this.voteContainer.appendChild(cardContainer);
         return cardContainer
     }

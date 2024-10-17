@@ -1,9 +1,9 @@
-import { users } from "../data/users.js";
 import { validateFullName, validateUsername, validatePassword } from "../functions/validate.js";
 import { generateValidateErrorList } from "../functions/validateErrorList.js";
 import { User } from '../classes/User.js';
 import { notification } from "../functions/notification.js";
 import { generateVoteForm } from "../functions/generators.js";
+import { readUserStatus } from "../functions/readUserStatus.js";
 
 const voteModal = document.getElementById('voteModal');
 
@@ -28,7 +28,7 @@ const passwordEventHandler = (event) => {
     return result.valid
 }
 
-const regSubmitEventHandler = (event) => {
+const regSubmitEventHandler = (event, users) => {
     event.preventDefault();
     const userName = document.getElementById('regUsername').value;
     try {
@@ -69,7 +69,7 @@ const regSubmitEventHandler = (event) => {
     console.log(users)
 };
 
-const loginEventHandler = (event) => {
+const loginEventHandler = (event, users) => {
     event.preventDefault();
     const userName = document.getElementById('loginUsername').value;
     const pwHash = md5(document.getElementById('loginPassword').value);
@@ -82,8 +82,7 @@ const loginEventHandler = (event) => {
         else if (result.pwHash !== pwHash) throw new Error('Wrong password!');
 
         else {
-            // Save login data to local storage
-            localStorage.setItem('VotingApp', JSON.stringify({ userName: result.username, name: result.name }));
+            result.logIn()
             // Reset login form fields
             document.getElementById('loginForm').reset()
 
@@ -127,32 +126,37 @@ const logoutEventHandler = () => {
 }
 
 const voteEventHandler = (event, votes) => {
-    //try {
+    try {
         const form = event.target.parentElement.previousElementSibling.querySelector('form');
         const voteId = form.id.split('Vote')[1];
-        console.log(voteId)
         const voteValue = form.elements[`vote${voteId}Radios`].value;
         if (!votes[voteId].doVote(voteValue)) throw new Error('Chooose an option!');
         if (votes[voteId].updateAll()) {
             bootstrap.Modal.getOrCreateInstance(voteModal).hide();
             throw { name: 'Info', message: 'Vote registered successfully!' };
         }
-    //}
-    // catch ({ name, message }) {
-    //     notification({ name, msg: message });
-    // }
+    }
+    catch ({ name, message }) {
+        notification({ name, msg: message });
+    }
 }
 
 const openVoteModalEventHandler = (voteData) => {
-    const voteModalHeader = voteModal.children[0].children[0].children[0];
-    const voteModalBody = voteModal.children[0].children[0].children[1];
-    const inputs = generateVoteForm(voteData.options,voteData.id)
-    voteModalBody.innerHTML = inputs;
-    bootstrap.Modal.getOrCreateInstance(voteModal).show();
-
+    try {
+        if (!readUserStatus()) throw { name: 'Info', message: 'You need log in!' };
+        const voteModalHeader = voteModal.children[0].children[0].children[0];
+        const voteModalBody = voteModal.children[0].children[0].children[1];
+        const inputs = generateVoteForm(voteData.options, voteData.id)
+        voteModalBody.innerHTML = inputs;
+        bootstrap.Modal.getOrCreateInstance(voteModal).show();
+    }
+    catch({name, message}) {
+        notification({name, msg:message})
+    }
 }
 
 export {
+    voteModal,
     fullNameEventHandler,
     usernameEventHandler,
     passwordEventHandler,

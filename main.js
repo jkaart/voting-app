@@ -1,9 +1,15 @@
-import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, voteEventHandler} from "./js/events/eventHandlers.js";
+import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, voteEventHandler, voteModal} from "./js/events/eventHandlers.js";
 import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
 import { generateVoteCardArray } from "./js/functions/votesArray.js";
 import { VoteCard } from "./js/classes/VoteCard.js";
 import { votesData } from "./js/data/votes.js";
+import { loadUsers } from "./js/functions/loadUsers.js";
+import { usersData } from "./js/data/users.js";
+import { readUserStatus } from "./js/functions/readUserStatus.js";
+
+const users = loadUsers(usersData);
+console.log(users);
 
 const regForm = document.getElementById('regForm');
 
@@ -93,15 +99,27 @@ regReturnBtn.addEventListener('click', () => {
     regForm.reset();
 })
 
-regSubmitBtn.addEventListener('click', regSubmitEventHandler);
+regSubmitBtn.addEventListener('click', (event) => {
+    regSubmitEventHandler(event, users);
+});
 
-loginSubmitBtn.addEventListener('click', loginEventHandler);
+loginSubmitBtn.addEventListener('click', (event) => {
+    loginEventHandler(event, users);
+});
+
 logoutBtn.addEventListener('click', logoutEventHandler);
 
 const votes = generateVoteCardArray(votesData);
 
 voteSubmitBtn.addEventListener('click', (event) => {
-    voteEventHandler(event, votes);
+    try {
+        if (!readUserStatus()) throw {name:'Info', message:'You need log in' };
+        voteEventHandler(event, votes);
+        
+    }
+    catch({name, message}) {
+        notification({name, msg:message});
+    }
 });
 
 
