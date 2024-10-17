@@ -127,7 +127,7 @@ const logoutEventHandler = () => {
 }
 
 const voteEventHandler = (event, votes) => {
-    try {
+    //try {
         const form = event.target.parentElement.previousElementSibling.querySelector('form');
         const voteId = form.id.split('Vote')[1];
         console.log(voteId)
@@ -137,10 +137,10 @@ const voteEventHandler = (event, votes) => {
             bootstrap.Modal.getOrCreateInstance(voteModal).hide();
             throw { name: 'Info', message: 'Vote registered successfully!' };
         }
-    }
-    catch ({ name, message }) {
-        notification({ name, msg: message });
-    }
+    //}
+    // catch ({ name, message }) {
+    //     notification({ name, msg: message });
+    // }
 }
 
 const openVoteModalEventHandler = (voteData) => {

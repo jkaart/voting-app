@@ -7,7 +7,6 @@ const generateProgressBars = (options, voteId) => {
             <div class="progress voteProgress" role="progressbar" aria-label="Vote progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                 <div class="progress-bar" style="width: 0%"></div>
             </div>`
-        console.log(option)
     }
     return progressBars
 }
