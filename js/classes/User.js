@@ -1,10 +1,21 @@
 class User {
+    #userID;
+    #username;
+    #pwHash;
     constructor(userID, username, pwHash, name) {
-        this.userID = userID;
-        this.username = username;
-        this.pwHash = pwHash;
+        this.#userID = userID;
+        this.#username = username;
+        this.#pwHash = pwHash;
         this.name = name;
         this.isLoggedIn = false;
+    }
+
+    get username() {
+        return this.#username;
+    }
+
+    get pwHash() {
+        return this.#pwHash;
     }
 
     logIn() {

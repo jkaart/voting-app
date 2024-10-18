@@ -1,15 +1,16 @@
-import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, voteEventHandler, voteModal} from "./js/events/eventHandlers.js";
+import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, voteEventHandler, voteModal } from "./js/events/eventHandlers.js";
 import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
 import { generateVoteCardArray } from "./js/functions/votesArray.js";
-import { VoteCard } from "./js/classes/VoteCard.js";
 import { votesData } from "./js/data/votes.js";
 import { loadUsers } from "./js/functions/loadUsers.js";
 import { usersData } from "./js/data/users.js";
 import { readUserStatus } from "./js/functions/readUserStatus.js";
 
+// Clear localStorage
+localStorage.removeItem('VotingApp');
+
 const users = loadUsers(usersData);
-console.log(users);
 
 const regForm = document.getElementById('regForm');
 
@@ -113,17 +114,11 @@ const votes = generateVoteCardArray(votesData);
 
 voteSubmitBtn.addEventListener('click', (event) => {
     try {
-        if (!readUserStatus()) throw {name:'Info', message:'You need log in' };
+        if (!readUserStatus()) throw { name: 'Info', message: 'You need log in' };
         voteEventHandler(event, votes);
-        
+
     }
-    catch({name, message}) {
-        notification({name, msg:message});
+    catch ({ name, message }) {
+        notification({ name, msg: message });
     }
 });
-
-
-// votes.forEach(vote => {
-//     vote.draw();
-    
-// });

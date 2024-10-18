@@ -150,8 +150,8 @@ const openVoteModalEventHandler = (voteData) => {
         voteModalBody.innerHTML = inputs;
         bootstrap.Modal.getOrCreateInstance(voteModal).show();
     }
-    catch({name, message}) {
-        notification({name, msg:message})
+    catch ({ name, message }) {
+        notification({ name, msg: message })
     }
 }
 
