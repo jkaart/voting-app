@@ -5,7 +5,7 @@ import { notification } from "../functions/notification.js";
 import { generateVoteForm } from "../functions/generators.js";
 import { readUserStatus } from "../functions/readUserStatus.js";
 
-const voteModal = document.getElementById('voteModal');
+const viewVoteModal = document.getElementById('viewVoteModal');
 
 const fullNameEventHandler = (event) => {
     const result = validateFullName(event.target.value);
@@ -132,7 +132,7 @@ const voteEventHandler = (event, votes) => {
         const voteValue = form.elements[`vote${voteId}Radios`].value;
         if (!votes[voteId].doVote(voteValue)) throw new Error('Chooose an option!');
         if (votes[voteId].updateAll()) {
-            bootstrap.Modal.getOrCreateInstance(voteModal).hide();
+            bootstrap.Modal.getOrCreateInstance(viewVoteModal).hide();
             throw { name: 'Info', message: 'Vote registered successfully!' };
         }
     }
@@ -141,14 +141,14 @@ const voteEventHandler = (event, votes) => {
     }
 }
 
-const openVoteModalEventHandler = (voteData) => {
+const openViewVoteModalEventHandler = (voteData) => {
     try {
         if (!readUserStatus()) throw { name: 'Info', message: 'You need log in!' };
-        const voteModalHeader = voteModal.children[0].children[0].children[0];
-        const voteModalBody = voteModal.children[0].children[0].children[1];
+        const viewVoteModalHeader = viewVoteModal.children[0].children[0].children[0];
+        const viewVoteModalBody = viewVoteModal.children[0].children[0].children[1];
         const inputs = generateVoteForm(voteData.options, voteData.id)
-        voteModalBody.innerHTML = inputs;
-        bootstrap.Modal.getOrCreateInstance(voteModal).show();
+        viewVoteModalBody.innerHTML = inputs;
+        bootstrap.Modal.getOrCreateInstance(viewVoteModal).show();
     }
     catch ({ name, message }) {
         notification({ name, msg: message })
@@ -156,7 +156,7 @@ const openVoteModalEventHandler = (voteData) => {
 }
 
 export {
-    voteModal,
+    viewVoteModal,
     fullNameEventHandler,
     usernameEventHandler,
     passwordEventHandler,
@@ -164,5 +164,5 @@ export {
     loginEventHandler,
     logoutEventHandler,
     voteEventHandler,
-    openVoteModalEventHandler,
+    openViewVoteModalEventHandler,
 }

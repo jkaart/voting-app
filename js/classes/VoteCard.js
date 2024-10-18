@@ -1,4 +1,4 @@
-import { openVoteModalEventHandler } from "../events/eventHandlers.js";
+import { openViewVoteModalEventHandler } from "../events/eventHandlers.js";
 import { calcPercentage } from "../functions/percentage.js";
 import { generateProgressBars } from "../functions/generators.js"
 
@@ -58,7 +58,7 @@ class VoteCard {
 
     draw() {
         const cardContainer = generateCardContainer(this.voteData);
-        cardContainer.addEventListener('click', () => { openVoteModalEventHandler(this.voteData) });
+        cardContainer.addEventListener('click', () => { openViewVoteModalEventHandler(this.voteData) });
         this.voteContainer.appendChild(cardContainer);
         return cardContainer
     }
