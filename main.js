@@ -1,30 +1,13 @@
-import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, voteEventHandler, viewVoteModal } from "./js/events/eventHandlers.js";
+import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, voteEventHandler} from "./js/events/eventHandlers.js";
+import { regFullName,regUser, regPassword1, regPassword2, regReturnBtn, regSubmitBtn, loginSubmitBtn, logoutBtn, voteSubmitBtn } from "./js/htmlElements/htmlElements.js";
 import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
 import { generateVoteCardArray } from "./js/functions/votesArray.js";
 import { votesData } from "./js/data/votes.js";
-import { loadUsers } from "./js/functions/loadUsers.js";
-import { usersData } from "./js/data/users.js";
 import { readUserStatus } from "./js/functions/readUserStatus.js";
 
 // Clear localStorage
 localStorage.removeItem('VotingApp');
-
-const regForm = document.getElementById('regForm');
-
-const regFullName = document.getElementById('regFullName');
-const regUser = document.getElementById('regUsername');
-const regPassword1 = document.getElementById('regPassword1');
-const regPassword2 = document.getElementById('regPassword2');
-const regSubmitBtn = document.getElementById('regSubmit');
-const regReturnBtn = document.getElementById('regInfoReturnBtn');
-
-const logoutBtn = document.getElementById('logout');
-
-const loginSubmitBtn = document.getElementById('loginSubmit');
-
-const voteSubmitBtn = document.getElementById('voteSubmit');
-
 
 regFullName.addEventListener('input', (event) => {
     const result = fullNameEventHandler(event);

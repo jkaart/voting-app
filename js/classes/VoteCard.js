@@ -1,6 +1,7 @@
 import { openViewVoteModalEventHandler } from "../events/eventHandlers.js";
 import { calcPercentage } from "../functions/percentage.js";
-import { generateProgressBars } from "../functions/generators.js"
+import { generateProgressBars } from "../functions/generators.js";
+import { voteContainer } from "../htmlElements/htmlElements.js";
 
 const generateCardContainer = (voteData) => {
     const progressBars = generateProgressBars(voteData.options, voteData.id);
@@ -35,7 +36,7 @@ class VoteCard {
         this.description = description;
         this.options = options;
         this.totalVoteCount = 0;
-        this.voteContainer = document.getElementById('voteContainer').children[0];
+        this.voteContainer = voteContainer.children[0];
         this.cardContainer = this.draw();
         this.voteBody = this.cardContainer.children[0].children[0].children[0].children[2];
         this.voteCounterSpans = this.voteBody.querySelectorAll('span.voteCounter');

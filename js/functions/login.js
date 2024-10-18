@@ -1,18 +1,12 @@
-const loginForm = document.getElementById('loginForm');
-const logonBtn = document.getElementById('showLogonForm');
-const showRegModal = document.getElementById('showRegModal');
-
-const logoutBtn = document.getElementById('logout')
-
-const user = document.getElementById('user');
+import { userNameSpan, showRegModal, logoutBtn, logonBtn, loginForm } from "../htmlElements/htmlElements.js";
 
 const login = () => {
     // Reset login form;
     loginForm.reset();
 
     // Show full name of the logged in user in the navbar
-    user.textContent = `Welcome ${JSON.parse(localStorage.getItem('VotingApp')).name}`;
-    user.classList.remove('d-none');
+    userNameSpan.textContent = `Welcome ${JSON.parse(localStorage.getItem('VotingApp')).name}`;
+    userNameSpan.classList.remove('d-none');
 
     // hide register button
     showRegModal.classList.add('d-none');
@@ -35,8 +29,8 @@ const logout = () => {
     showRegModal.classList.remove('d-none');
 
     // Remove full name of logged in user from the navbar
-    user.textContent = '';
-    user.classList.add('d-none');
+    userNameSpan.textContent = '';
+    userNameSpan.classList.add('d-none');
     console.log('logout')
 }
 

@@ -6,11 +6,10 @@ import { generateVoteForm } from "../functions/generators.js";
 import { readUserStatus } from "../functions/readUserStatus.js";
 import { usersData } from "../data/users.js";
 import { loadUsers } from "../functions/loadUsers.js";
+import { viewVoteModal, regForm, regUsername, regFullName, regModal, regSubmitBtn } from "../htmlElements/htmlElements.js";
 
-const viewVoteModal = document.getElementById('viewVoteModal');
 const users = loadUsers(usersData);
 
-let loggedUser;
 console.log(users);
 
 const fullNameEventHandler = (event) => {
@@ -36,13 +35,13 @@ const passwordEventHandler = (event) => {
 
 const regSubmitEventHandler = (event) => {
     event.preventDefault();
-    const userName = document.getElementById('regUsername').value;
+    const userName = regUsername.value;
     try {
         const result = users.find(({ username }) => username === userName);
         if (result) throw new Error(`${userName} is already registered!`);
         else {
             const pwHash = md5(document.getElementById('regPassword1').value);
-            const name = document.getElementById('regFullName').value;
+            const name = regFullName.value;
             const userDataLength = usersData.length
             const user = {userID: userDataLength, username:userName, pwHash, name} //new User(users.length, userName, pwHash, name);
             usersData.push(user);
@@ -59,12 +58,12 @@ const regSubmitEventHandler = (event) => {
         notification({ name, msg: message });
 
         if (name === 'Info') {
-            bootstrap.Modal.getInstance(document.getElementById('regModal')).hide();
+            bootstrap.Modal.getInstance(regModal.hide());
         }
     }
     finally {
-        document.getElementById('regForm').reset();
-        const inputs = document.getElementById('regForm').getElementsByTagName('input');
+        regForm.reset();
+        const inputs = regForm.getElementsByTagName('input');
         for (let index = 0; index < inputs.length; index++) {
             const element = inputs[index];
             element.classList.remove('is-valid');
@@ -75,9 +74,8 @@ const regSubmitEventHandler = (event) => {
                 element.setAttribute('disabled', '');
             }
         }
-        document.getElementById('regSubmit').setAttribute('disabled', '');
+        regSubmitBtn.setAttribute('disabled', '');
     }
-    console.log(users)
 };
 
 const loginEventHandler = (event) => {
