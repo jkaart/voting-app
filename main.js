@@ -10,8 +10,6 @@ import { readUserStatus } from "./js/functions/readUserStatus.js";
 // Clear localStorage
 localStorage.removeItem('VotingApp');
 
-const users = loadUsers(usersData);
-
 const regForm = document.getElementById('regForm');
 
 const regFullName = document.getElementById('regFullName');
@@ -26,6 +24,7 @@ const logoutBtn = document.getElementById('logout');
 const loginSubmitBtn = document.getElementById('loginSubmit');
 
 const voteSubmitBtn = document.getElementById('voteSubmit');
+
 
 regFullName.addEventListener('input', (event) => {
     const result = fullNameEventHandler(event);
@@ -101,11 +100,11 @@ regReturnBtn.addEventListener('click', () => {
 })
 
 regSubmitBtn.addEventListener('click', (event) => {
-    regSubmitEventHandler(event, users);
+    regSubmitEventHandler(event);
 });
 
 loginSubmitBtn.addEventListener('click', (event) => {
-    loginEventHandler(event, users);
+    loginEventHandler(event);
 });
 
 logoutBtn.addEventListener('click', logoutEventHandler);

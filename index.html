@@ -22,7 +22,12 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <ul class="navbar-nav ms-auto mb-0">
                     <li class="nav-item mt-2 m-sm-2">
-                        <a class="btn btn-primary" id="showRegForm" href="#" data-bs-toggle="modal"
+                        <a class="btn btn-primary" id="showAddVoteModal" href="#" data-bs-toggle="modal"
+                            data-bs-target="#regModal" type="button">Add new vote</a>
+                    </li>
+                    <div class="vr d-none d-sm-inline"></div>
+                    <li class="nav-item mt-2 m-sm-2">
+                        <a class="btn btn-primary" id="showRegModal" href="#" data-bs-toggle="modal"
                             data-bs-target="#regModal" type="button">Register</a>
                     </li>
                     <li class="nav-item mt-2 m-sm-2 me-0">
@@ -136,18 +141,18 @@
         </div>
     </div>
     <!-- Add vote modal -->
-    <div class="modal fade" id="voteModal" tabindex="-1" aria-labelledby="voteModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addVoteModal" tabindex="-1" aria-labelledby="addVoteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="voteModalLabel">Voting</h1>
+                    <h1 class="modal-title fs-5" id="addVoteModalLabel">Add new vote</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body mx-2">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" id="voteSubmit">Vote</button>
+                    <button type="submit" class="btn btn-primary" id="addVoteSubmit">Add new vote</button>
                 </div>
             </div>
         </div>

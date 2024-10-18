@@ -4,8 +4,14 @@ import { User } from '../classes/User.js';
 import { notification } from "../functions/notification.js";
 import { generateVoteForm } from "../functions/generators.js";
 import { readUserStatus } from "../functions/readUserStatus.js";
+import { usersData } from "../data/users.js";
+import { loadUsers } from "../functions/loadUsers.js";
 
 const viewVoteModal = document.getElementById('viewVoteModal');
+const users = loadUsers(usersData);
+
+let loggedUser;
+console.log(users);
 
 const fullNameEventHandler = (event) => {
     const result = validateFullName(event.target.value);
@@ -28,7 +34,7 @@ const passwordEventHandler = (event) => {
     return result.valid
 }
 
-const regSubmitEventHandler = (event, users) => {
+const regSubmitEventHandler = (event) => {
     event.preventDefault();
     const userName = document.getElementById('regUsername').value;
     try {
@@ -37,8 +43,13 @@ const regSubmitEventHandler = (event, users) => {
         else {
             const pwHash = md5(document.getElementById('regPassword1').value);
             const name = document.getElementById('regFullName').value;
-            const user = new User(users.length, userName, pwHash, name);
-            users.push(user);
+            const userDataLength = usersData.length
+            const user = {userID: userDataLength, username:userName, pwHash, name} //new User(users.length, userName, pwHash, name);
+            usersData.push(user);
+            users.push(new User(user));
+
+            console.log(usersData)
+            console.log(users)
             //event.target.submit();
 
             throw { name: 'Info', message: `${userName} is registered successfully!` };
@@ -69,7 +80,7 @@ const regSubmitEventHandler = (event, users) => {
     console.log(users)
 };
 
-const loginEventHandler = (event, users) => {
+const loginEventHandler = (event) => {
     event.preventDefault();
     const userName = document.getElementById('loginUsername').value;
     const pwHash = md5(document.getElementById('loginPassword').value);
@@ -82,23 +93,7 @@ const loginEventHandler = (event, users) => {
         else if (result.pwHash !== pwHash) throw new Error('Wrong password!');
 
         else {
-            result.logIn()
-            // Reset login form fields
-            document.getElementById('loginForm').reset()
-
-            // Show full name of the logged in user
-            const user = document.getElementById('user');
-            user.textContent = `Welcome ${JSON.parse(localStorage.getItem('VotingApp')).name}`;
-            user.classList.remove('d-none');
-
-            // hide register button
-            document.getElementById('showRegForm').classList.add('d-none');
-
-            // Show logout button
-            document.getElementById('logout').classList.remove('d-none');
-
-            // Hide logon button
-            document.getElementById('showLogonForm').classList.add('d-none');
+            result.logIn();
 
             throw { name: 'Info', message: `${result.name} has logged in successfully` };
         }
@@ -112,14 +107,8 @@ const loginEventHandler = (event, users) => {
 }
 
 const logoutEventHandler = () => {
-    localStorage.removeItem('VotingApp');
-    document.getElementById('logout').classList.add('d-none');
-    document.getElementById('showLogonForm').classList.remove('d-none');
-    document.getElementById('showRegForm').classList.remove('d-none');
-    const user = document.getElementById('user');
-    user.textContent = '';
-    user.classList.add('d-none');
-    console.log('logged out')
+    const result = users.find(({ userID }) => userID === JSON.parse(localStorage.getItem('VotingApp')).userID);
+    result.logOut();
     notification({ name: 'Info', msg: 'You are logged out' })
     //window.location.reload();
 
