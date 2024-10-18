@@ -58,7 +58,7 @@ const regSubmitEventHandler = (event) => {
         notification({ name, msg: message });
 
         if (name === 'Info') {
-            bootstrap.Modal.getInstance(regModal.hide());
+            bootstrap.Modal.getOrCreateInstance(regModal).hide();
         }
     }
     finally {

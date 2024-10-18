@@ -140,7 +140,7 @@
             </div>
         </div>
     </div>
-    <!-- Add vote modal -->
+    <!-- Add new vote modal -->
     <div class="modal fade" id="addVoteModal" tabindex="-1" aria-labelledby="addVoteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -149,6 +149,16 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body mx-2">
+                    <form >
+                        <div class="form-group">
+                            <label for="newVoteTitle">Title</label>
+                            <input type="text" class="form-control" id="newVoteTitle" placeholder="Vote title">
+                        </div>
+                        <div class="form-group">
+                            <label for="newVoteDescription">Vote Description</label>
+                            <textarea type="text" class="form-control" id="newVoteDescription" placeholder="Vote description"></textarea>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

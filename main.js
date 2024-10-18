@@ -1,5 +1,5 @@
-import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, voteEventHandler} from "./js/events/eventHandlers.js";
-import { regFullName,regUser, regPassword1, regPassword2, regReturnBtn, regSubmitBtn, loginSubmitBtn, logoutBtn, voteSubmitBtn } from "./js/htmlElements/htmlElements.js";
+import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, voteEventHandler } from "./js/events/eventHandlers.js";
+import { regFullName, regUser, regPassword1, regPassword2, regReturnBtn, regSubmitBtn, loginSubmitBtn, logoutBtn, voteSubmitBtn, regFormModalBody, regFormModalFooter, regInfoModalBody, regInfoModalFooter } from "./js/htmlElements/htmlElements.js";
 import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
 import { generateVoteCardArray } from "./js/functions/votesArray.js";
