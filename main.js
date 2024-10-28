@@ -1,5 +1,5 @@
-import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, voteEventHandler, deleteVoteEventHandler } from "./js/events/eventHandlers.js";
-import { regFullName, regUser, regPassword1, regPassword2, regReturnBtn, regSubmitBtn, loginSubmitBtn, logoutBtn, voteSubmitBtn, voteDeleteBtn } from "./js/htmlElements/htmlElements.js";
+import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, voteEventHandler, newVoteEventHandler, deleteVoteEventHandler } from "./js/events/eventHandlers.js";
+import { regFullName, regUser, regPassword1, regPassword2, regReturnBtn, regSubmitBtn, loginSubmitBtn, logoutBtn, voteSubmitBtn, voteDeleteBtn, addNewVoteSubmitBtn } from "./js/htmlElements/htmlElements.js";
 import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
 import { generateVoteCardMap } from "./js/functions/votesMap.js";
@@ -93,6 +93,7 @@ loginSubmitBtn.addEventListener('click', (event) => {
 });
 
 voteDeleteBtn.addEventListener('click', (event) => { deleteVoteEventHandler(event, votes) });
+addNewVoteSubmitBtn.addEventListener('click', (event) => { newVoteEventHandler(event, votes) });
 
 logoutBtn.addEventListener('click', logoutEventHandler);
 

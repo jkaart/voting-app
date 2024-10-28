@@ -1,12 +1,13 @@
 import { validateFullName, validateUsername, validatePassword } from "../functions/validate.js";
 import { generateValidateErrorList } from "../functions/validateErrorList.js";
 import { User } from '../classes/User.js';
+import { VoteCard } from "../classes/VoteCard.js";
 import { notification } from "../functions/notification.js";
 import { generateVoteForm } from "../functions/generators.js";
 import { readLocalStorageLoginStatus, readLocalStorageUserRole } from "../functions/readLocalStorage.js";
 import { loadUsers } from "../functions/loadUsers.js";
 import { usersData } from "../data/users.js";
-import { viewVoteModal, regForm, regUsername, regPassword1, regFullName, regModal, regSubmitBtn, showAddVoteModalBtn, voteDeleteBtn } from "../htmlElements/htmlElements.js";
+import { viewVoteModal, regForm, regUsername, regPassword1, regFullName, regModal, regSubmitBtn, newVoteForm, voteDeleteBtn, newVoteTitle, newVoteDescription } from "../htmlElements/htmlElements.js";
 
 const users = loadUsers(usersData);
 
@@ -149,6 +150,25 @@ const openViewVoteModalEventHandler = (voteData) => {
     }
 }
 
+const newVoteEventHandler = (event, votes) => {
+    const lastVoteID = Number([...votes.entries()].at(-1)[0])
+    const voteID = String(lastVoteID + 1);
+
+    const title = newVoteTitle.value;
+    const description = newVoteDescription.value;
+
+    const inputs = newVoteForm.children[1].getElementsByTagName('input');
+    const options = [];
+    
+    console.log(inputs)
+    for (const input of inputs) {
+        options.push({'option':input.value, 'voteCount': 0});
+    };
+
+    votes.set(voteID, new VoteCard(voteID, title, description, options, voteEventHandler));
+    console.log(votes);
+}
+
 const deleteVoteEventHandler = (event, votes) => {
     try {
         if (!readLocalStorageLoginStatus()) throw new Error('You need log in!');
@@ -184,5 +204,6 @@ export {
     logoutEventHandler,
     voteEventHandler,
     openViewVoteModalEventHandler,
+    newVoteEventHandler,
     deleteVoteEventHandler,
 }
