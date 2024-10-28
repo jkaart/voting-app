@@ -35,6 +35,7 @@ const showAddVoteModalBtn = document.getElementById('showAddVoteModal');
 const addNewVoteSubmitBtn = document.getElementById('addVoteSubmit');
 
 const voteDeleteBtn = document.createElement('button');
+voteDeleteBtn.classList.add('btn', 'btn-danger');
 voteDeleteBtn.textContent = 'Delete this vote';
 
 // Spans

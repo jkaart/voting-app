@@ -1,4 +1,4 @@
-import { login, logout } from "../functions/login.js";
+import { login, logout } from "../functions/logInAndLogOut.js";
 
 class User {
     #userID;

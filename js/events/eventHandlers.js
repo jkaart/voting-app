@@ -142,6 +142,9 @@ const openViewVoteModalEventHandler = (voteData) => {
         if (readLocalStorageUserRole() === 'admin') {
             viewVoteModalFooter.appendChild(voteDeleteBtn);
         }
+        else {
+            voteDeleteBtn.remove();
+        }
         viewVoteModalBody.innerHTML = inputs;
         bootstrap.Modal.getOrCreateInstance(viewVoteModal).show();
     }
