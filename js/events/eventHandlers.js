@@ -4,9 +4,9 @@ import { User } from '../classes/User.js';
 import { notification } from "../functions/notification.js";
 import { generateVoteForm } from "../functions/generators.js";
 import { readUserStatus } from "../functions/readUserStatus.js";
-import { usersData } from "../data/users.js";
 import { loadUsers } from "../functions/loadUsers.js";
-import { viewVoteModal, regForm, regUsername, regFullName, regModal, regSubmitBtn } from "../htmlElements/htmlElements.js";
+import { usersData } from "../data/users.js";
+import { viewVoteModal, regForm, regUsername, regFullName, regModal, regSubmitBtn, voteDeleteBtn } from "../htmlElements/htmlElements.js";
 
 const users = loadUsers(usersData);
 
@@ -43,7 +43,7 @@ const regSubmitEventHandler = (event) => {
             const pwHash = md5(document.getElementById('regPassword1').value);
             const name = regFullName.value;
             const userDataLength = usersData.length
-            const user = {userID: userDataLength, username:userName, pwHash, name} //new User(users.length, userName, pwHash, name);
+            const user = { userID: userDataLength, username: userName, pwHash, name };
             usersData.push(user);
             users.push(new User(user));
 
@@ -116,9 +116,11 @@ const voteEventHandler = (event, votes) => {
     try {
         const form = event.target.parentElement.previousElementSibling.querySelector('form');
         const voteId = form.id.split('Vote')[1];
+
+        const vote = votes.get(voteId);
         const voteValue = form.elements[`vote${voteId}Radios`].value;
-        if (!votes[voteId].doVote(voteValue)) throw new Error('Chooose an option!');
-        if (votes[voteId].updateAll()) {
+        if (!vote.doVote(voteValue)) throw new Error('Chooose an option!');
+        if (vote.updateAll()) {
             bootstrap.Modal.getOrCreateInstance(viewVoteModal).hide();
             throw { name: 'Info', message: 'Vote registered successfully!' };
         }
@@ -133,7 +135,9 @@ const openViewVoteModalEventHandler = (voteData) => {
         if (!readUserStatus()) throw { name: 'Info', message: 'You need log in!' };
         const viewVoteModalHeader = viewVoteModal.children[0].children[0].children[0];
         const viewVoteModalBody = viewVoteModal.children[0].children[0].children[1];
-        const inputs = generateVoteForm(voteData.options, voteData.id)
+        const viewVoteModalFooter = viewVoteModal.children[0].children[0].children[2];
+        const inputs = generateVoteForm(voteData.options, voteData.id);
+        viewVoteModalFooter.appendChild(voteDeleteBtn);
         viewVoteModalBody.innerHTML = inputs;
         bootstrap.Modal.getOrCreateInstance(viewVoteModal).show();
     }
@@ -142,8 +146,21 @@ const openViewVoteModalEventHandler = (voteData) => {
     }
 }
 
+const deleteVoteEventHandler = (event, votes) => {
+    const form = event.target.parentElement.previousElementSibling.querySelector('form');
+    const voteId = form.id.split('Vote')[1];
+
+    console.log(votes);
+    const voteCard = votes.get(voteId)
+    // Remove the vote from DOM
+    voteCard.cardContainer.remove();
+    // delete the  vote from map
+    votes.delete(voteId);
+
+    console.log(votes);
+}
+
 export {
-    viewVoteModal,
     fullNameEventHandler,
     usernameEventHandler,
     passwordEventHandler,
@@ -152,4 +169,5 @@ export {
     logoutEventHandler,
     voteEventHandler,
     openViewVoteModalEventHandler,
+    deleteVoteEventHandler,
 }

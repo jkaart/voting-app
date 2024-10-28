@@ -29,6 +29,8 @@ const logoutBtn = document.getElementById('logout');
 const loginSubmitBtn = document.getElementById('loginSubmit');
 const voteSubmitBtn = document.getElementById('voteSubmit');
 
+const voteDeleteBtn = document.createElement('button');
+voteDeleteBtn.textContent = 'Delete this vote';
 
 // Spans
 const userNameSpan = document.getElementById('user');
@@ -57,6 +59,7 @@ export {
     logoutBtn,
     loginSubmitBtn,
     voteSubmitBtn,
+    voteDeleteBtn,
     userNameSpan,
     voteContainer
 }

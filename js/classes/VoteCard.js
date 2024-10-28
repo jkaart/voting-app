@@ -7,24 +7,23 @@ const generateCardContainer = (voteData) => {
     const progressBars = generateProgressBars(voteData.options, voteData.id);
     const cardContainer = document.createElement('div');
     cardContainer.classList.add('col');
-    cardContainer.innerHTML = `<div class="col">
-                <div class="text-bg-light card">
-                    <div class="card-body">
-                        <div>
-                            <h5 class='float-end fs-6' id='totalVotes'>Total votes: ${voteData.totalVoteCount}</h5>
-                            <h5 class="card-title">${voteData.title}</h5>
-                        </div>
-                        <div class="my-2">
-                        ${voteData.description}
-                        </div>
-                        <div>
-                            ${progressBars}
-                        </div>
-                    </div>
-                    <div class='card-footer'>
-                    </div>
+    cardContainer.innerHTML = `
+        <div class="bg-light text-dark card">
+            <div class="card-body">
+                <div>
+                    <h5 class="float-end fs-6" id="vote${voteData.id}TotalVotes">Total votes: ${voteData.totalVoteCount}</h5>
+                    <h5 class="card-title">${voteData.title}</h5>
                 </div>
-            </div>`
+                <div class="my-2">
+                    ${voteData.description}
+                </div>
+                <div>
+                    ${progressBars}
+                </div>
+            </div>
+            <div class='card-footer'>
+            </div>
+        </div>`
     return cardContainer
 }
 
@@ -38,15 +37,21 @@ class VoteCard {
         this.totalVoteCount = 0;
         this.voteContainer = voteContainer.children[0];
         this.cardContainer = this.draw();
-        this.voteBody = this.cardContainer.children[0].children[0].children[0].children[2];
+        this.cardBody = this.cardContainer.children[0].children[0];
+        this.cardFooter = this.cardContainer.children[0].children[1];
+        this.voteBody = this.cardBody.children[2];
         this.voteCounterSpans = this.voteBody.querySelectorAll('span.voteCounter');
         this.voteProgressDivs = this.voteBody.querySelectorAll('div.voteProgress');
-        this.totalVotesH5 = this.cardContainer.children[0].children[0].children[0].children[0].children[0];
+        this.totalVotesH5 = this.cardBody.children[0].children[0];
     }
 
     get voteData() {
         const voteData = { id: this.#id, title: this.title, description: this.description, options: this.options, totalVoteCount: this.totalVoteCount }
         return voteData
+    }
+
+    get id() {
+        return this.#id
     }
 
     doVote(value) {
@@ -59,7 +64,7 @@ class VoteCard {
 
     draw() {
         const cardContainer = generateCardContainer(this.voteData);
-        cardContainer.addEventListener('click', () => { openViewVoteModalEventHandler(this.voteData) });
+        cardContainer.children[0].addEventListener('click', () => { openViewVoteModalEventHandler(this.voteData) });
         this.voteContainer.appendChild(cardContainer);
         return cardContainer
     }

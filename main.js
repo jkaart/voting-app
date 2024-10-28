@@ -1,13 +1,16 @@
-import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, voteEventHandler } from "./js/events/eventHandlers.js";
-import { regFullName, regUser, regPassword1, regPassword2, regReturnBtn, regSubmitBtn, loginSubmitBtn, logoutBtn, voteSubmitBtn, regFormModalBody, regFormModalFooter, regInfoModalBody, regInfoModalFooter } from "./js/htmlElements/htmlElements.js";
+import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, voteEventHandler, deleteVoteEventHandler } from "./js/events/eventHandlers.js";
+import { regFullName, regUser, regPassword1, regPassword2, regReturnBtn, regSubmitBtn, loginSubmitBtn, logoutBtn, voteSubmitBtn, voteDeleteBtn } from "./js/htmlElements/htmlElements.js";
 import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
-import { generateVoteCardArray } from "./js/functions/votesArray.js";
+import { generateVoteCardMap } from "./js/functions/votesMap.js";
 import { votesData } from "./js/data/votes.js";
 import { readUserStatus } from "./js/functions/readUserStatus.js";
 
 // Clear localStorage
 localStorage.removeItem('VotingApp');
+
+const votes = generateVoteCardMap(votesData);
+console.log(votes)
 
 regFullName.addEventListener('input', (event) => {
     const result = fullNameEventHandler(event);
@@ -35,14 +38,13 @@ regPassword1.addEventListener('input', (event) => {
     regUser.setAttribute('disabled', '');
     regFullName.setAttribute('disabled', '');
     const result = passwordEventHandler(event);
-    const pw2Field = event.target.parentElement.nextElementSibling.getElementsByTagName('input')[0];
-    pw2Field.value = '';
+    regPassword2.value = '';
     if (result) {
-        pw2Field.removeAttribute('disabled');
+        regPassword2.removeAttribute('disabled');
     }
     else {
         regSubmitBtn.setAttribute('disabled', '');
-        pw2Field.setAttribute('disabled', '');
+        regPassword2.setAttribute('disabled', '');
     }
     if (event.target.value.length === 0) {
         regUser.removeAttribute('disabled');
@@ -90,9 +92,9 @@ loginSubmitBtn.addEventListener('click', (event) => {
     loginEventHandler(event);
 });
 
-logoutBtn.addEventListener('click', logoutEventHandler);
+voteDeleteBtn.addEventListener('click', (event) => { deleteVoteEventHandler(event, votes) });
 
-const votes = generateVoteCardArray(votesData);
+logoutBtn.addEventListener('click', logoutEventHandler);
 
 voteSubmitBtn.addEventListener('click', (event) => {
     try {
