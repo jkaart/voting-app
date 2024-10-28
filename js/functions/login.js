@@ -1,4 +1,5 @@
-import { userNameSpan, showRegModal, logoutBtn, logonBtn, loginForm } from "../htmlElements/htmlElements.js";
+import { readLocalStorageUserRole } from "./readLocalStorage.js";
+import { userNameSpan, showRegModal, logoutBtn, logonBtn, loginForm, showAddVoteModalBtn } from "../htmlElements/htmlElements.js";
 
 const login = () => {
     // Reset login form;
@@ -16,6 +17,10 @@ const login = () => {
 
     // Hide logon button
     logonBtn.classList.add('d-none');
+
+    if (readLocalStorageUserRole() === 'admin') {
+        showAddVoteModalBtn.classList.remove('d-none');
+    }
 }
 
 const logout = () => {
@@ -31,6 +36,9 @@ const logout = () => {
     // Remove full name of logged in user from the navbar
     userNameSpan.textContent = '';
     userNameSpan.classList.add('d-none');
+
+    showAddVoteModalBtn.classList.add('d-none');
+
     console.log('logout')
 }
 

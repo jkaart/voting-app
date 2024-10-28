@@ -3,10 +3,10 @@ import { generateValidateErrorList } from "../functions/validateErrorList.js";
 import { User } from '../classes/User.js';
 import { notification } from "../functions/notification.js";
 import { generateVoteForm } from "../functions/generators.js";
-import { readUserStatus } from "../functions/readUserStatus.js";
+import { readLocalStorageLoginStatus, readLocalStorageUserRole } from "../functions/readLocalStorage.js";
 import { loadUsers } from "../functions/loadUsers.js";
 import { usersData } from "../data/users.js";
-import { viewVoteModal, regForm, regUsername, regFullName, regModal, regSubmitBtn, voteDeleteBtn } from "../htmlElements/htmlElements.js";
+import { viewVoteModal, regForm, regUsername, regPassword1, regFullName, regModal, regSubmitBtn, showAddVoteModalBtn, voteDeleteBtn } from "../htmlElements/htmlElements.js";
 
 const users = loadUsers(usersData);
 
@@ -40,10 +40,11 @@ const regSubmitEventHandler = (event) => {
         const result = users.find(({ username }) => username === userName);
         if (result) throw new Error(`${userName} is already registered!`);
         else {
-            const pwHash = md5(document.getElementById('regPassword1').value);
+            const role = regForm.querySelector('input[name="regRoleRadio"]:checked').value;
+            const pwHash = md5(regPassword1.value);
             const name = regFullName.value;
-            const userDataLength = usersData.length
-            const user = { userID: userDataLength, username: userName, pwHash, name };
+            const userDataLength = usersData.length;
+            const user = { userID: userDataLength, username: userName, pwHash, role, name };
             usersData.push(user);
             users.push(new User(user));
 
@@ -132,12 +133,14 @@ const voteEventHandler = (event, votes) => {
 
 const openViewVoteModalEventHandler = (voteData) => {
     try {
-        if (!readUserStatus()) throw { name: 'Info', message: 'You need log in!' };
+        if (!readLocalStorageLoginStatus()) throw { name: 'Info', message: 'You need log in!' };
         const viewVoteModalHeader = viewVoteModal.children[0].children[0].children[0];
         const viewVoteModalBody = viewVoteModal.children[0].children[0].children[1];
         const viewVoteModalFooter = viewVoteModal.children[0].children[0].children[2];
         const inputs = generateVoteForm(voteData.options, voteData.id);
-        viewVoteModalFooter.appendChild(voteDeleteBtn);
+        if (readLocalStorageUserRole() === 'admin') {
+            viewVoteModalFooter.appendChild(voteDeleteBtn);
+        }
         viewVoteModalBody.innerHTML = inputs;
         bootstrap.Modal.getOrCreateInstance(viewVoteModal).show();
     }
@@ -147,17 +150,29 @@ const openViewVoteModalEventHandler = (voteData) => {
 }
 
 const deleteVoteEventHandler = (event, votes) => {
-    const form = event.target.parentElement.previousElementSibling.querySelector('form');
-    const voteId = form.id.split('Vote')[1];
+    try {
+        if (!readLocalStorageLoginStatus()) throw new Error('You need log in!');
+        if (readLocalStorageUserRole() !== 'admin') throw new Error('You are not admin');
 
-    console.log(votes);
-    const voteCard = votes.get(voteId)
-    // Remove the vote from DOM
-    voteCard.cardContainer.remove();
-    // delete the  vote from map
-    votes.delete(voteId);
+        const form = event.target.parentElement.previousElementSibling.querySelector('form');
+        const voteId = form.id.split('Vote')[1];
 
-    console.log(votes);
+        console.log(votes);
+        bootstrap.Modal.getOrCreateInstance(viewVoteModal).hide();
+        const voteCard = votes.get(voteId);
+
+        // Remove the vote from DOM
+        voteCard.cardContainer.remove();
+
+        // delete the vote from map
+        votes.delete(voteId);
+
+        console.log(votes);
+        throw {name: 'Info', message: 'Vote deleted successfully'};
+    }
+    catch ({ name, message }) {
+        notification({ name, msg: message })
+    }
 }
 
 export {

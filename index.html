@@ -22,7 +22,7 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav ms-md-auto">
                     <div class="d-grid gap-2 d-md-flex justify-content-start justify-content-md-end ">
-                        <button class="btn btn-primary me-md-2" id="showAddVoteModal" data-bs-toggle="modal"
+                        <button class="btn btn-primary me-md-2 d-none" id="showAddVoteModal" data-bs-toggle="modal"
                             data-bs-target="#addVoteModal" type="button">Add new vote</button>
                         <button class="btn btn-primary" id="showRegModal" data-bs-toggle="modal"
                             data-bs-target="#regModal" type="button">Register</button>
@@ -58,6 +58,22 @@
                             <label for="regFullName">Full name</label>
                             <input type="text" class="form-control" id="regFullName" placeholder="Enter full name"
                                 required>
+                        </div>
+                        <label>User role</label>
+                        <div class="form-group">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="user" name="regRoleRadio" id="regRoleRadioUser"
+                                    checked>
+                                <label class="form-check-label" for="regRoleRadioUser">
+                                    User
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" value="admin" name="regRoleRadio" id="regRoleRadioAdmin">
+                                <label class="form-check-label" for="regRoleRadioAdmin">
+                                    Admin
+                                </label>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="regUsername">Username</label>
@@ -180,7 +196,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" id="addVoteSubmit">Add new vote</button>
+                    <button type="submit" class="btn btn-primary" id="addVoteSubmit">Add vote</button>
                 </div>
             </div>
         </div>

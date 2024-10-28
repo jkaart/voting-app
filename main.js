@@ -4,7 +4,7 @@ import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
 import { generateVoteCardMap } from "./js/functions/votesMap.js";
 import { votesData } from "./js/data/votes.js";
-import { readUserStatus } from "./js/functions/readUserStatus.js";
+import { readLocalStorageLoginStatus, readLocalStorageUserRole } from "./js/functions/readLocalStorage.js";
 
 // Clear localStorage
 localStorage.removeItem('VotingApp');
@@ -98,7 +98,7 @@ logoutBtn.addEventListener('click', logoutEventHandler);
 
 voteSubmitBtn.addEventListener('click', (event) => {
     try {
-        if (!readUserStatus()) throw { name: 'Info', message: 'You need log in' };
+        if (!readLocalStorageUserRole()) throw { name: 'Info', message: 'You need log in' };
         voteEventHandler(event, votes);
 
     }

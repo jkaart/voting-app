@@ -28,6 +28,7 @@ const logonBtn = document.getElementById('showLogonForm');
 const logoutBtn = document.getElementById('logout');
 const loginSubmitBtn = document.getElementById('loginSubmit');
 const voteSubmitBtn = document.getElementById('voteSubmit');
+const showAddVoteModalBtn = document.getElementById('showAddVoteModal')
 
 const voteDeleteBtn = document.createElement('button');
 voteDeleteBtn.textContent = 'Delete this vote';
@@ -59,6 +60,7 @@ export {
     logoutBtn,
     loginSubmitBtn,
     voteSubmitBtn,
+    showAddVoteModalBtn,
     voteDeleteBtn,
     userNameSpan,
     voteContainer
