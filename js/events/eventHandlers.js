@@ -7,7 +7,7 @@ import { generateVoteForm } from "../functions/generators.js";
 import { readLocalStorageLoginStatus, readLocalStorageUserRole } from "../functions/readLocalStorage.js";
 import { loadUsers } from "../functions/loadUsers.js";
 import { usersData } from "../data/users.js";
-import { viewVoteModal, regForm, regUsername, regPassword1, regFullName, regModal, regSubmitBtn, newVoteForm, voteDeleteBtn, newVoteTitle, newVoteDescription, newVoteOptionsInputFields } from "../htmlElements/htmlElements.js";
+import { viewVoteModal, regForm, regUsername, regPassword1, regFullName, regModal, regSubmitBtn, newVoteForm, voteDeleteBtn, newVoteTitle, newVoteDescription } from "../htmlElements/htmlElements.js";
 
 const users = loadUsers(usersData);
 

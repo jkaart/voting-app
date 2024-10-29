@@ -159,7 +159,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body mx-2">
-                    <form id="newVoteForm">
+                    <form id="newVoteForm" class="has-validation">
                         <div class="card rounded-0 border-bottom-0">
                             <div class="card-header">Voting details</div>
                             <div class="card-body">
@@ -177,17 +177,8 @@
                         </div>
                         <div class="card rounded-0 border-top">
                             <div class="card-header">Voting options</div>
-                            <div class="card-body" id="newVoteOptions">
-                                <div class="form-group">
-                                    <label for="newVoteOption1" class="form-label">Option 1</label>
-                                    <input type="text" class="form-control" id="newVoteOption1"
-                                        placeholder="Vote option 1" required disabled>
-                                </div>
-                                <div class="form-group">
-                                    <label for="newVoteOption2" class="form-label">Option 2</label>
-                                    <input type="text" class="form-control" id="newVoteOption2"
-                                        placeholder="Vote option 2" required disabled>
-                                </div>
+                            <div class="card-body">
+                                <div id="newVoteOptions"></div>
                                 <div class="mt-2">
                                     <button type="button" class="btn btn-primary" id="newVoteAddOption"
                                         disabled>+</button>

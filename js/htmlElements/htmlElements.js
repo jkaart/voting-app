@@ -15,9 +15,6 @@ const regForm = document.getElementById('regForm');
 const loginForm = document.getElementById('loginForm');
 const newVoteForm = document.getElementById('newVoteForm');
 
-// Bootstrap cards
-const newVoteOptionsCard = document.getElementById('newVoteOptions');
-
 // Input fields
 const regUsername = document.getElementById('regUsername');
 const regFullName = document.getElementById('regFullName');
@@ -26,8 +23,6 @@ const regPassword1 = document.getElementById('regPassword1');
 const regPassword2 = document.getElementById('regPassword2');
 const newVoteTitle = document.getElementById('newVoteTitle');
 const newVoteDescription = document.getElementById('newVoteDescription');
-
-const newVoteOptionsInputFields = newVoteOptionsCard.querySelectorAll('input');
 
 // Buttons
 const regSubmitBtn = document.getElementById('regSubmit');
@@ -47,9 +42,9 @@ voteDeleteBtn.textContent = 'Delete this vote';
 // Spans
 const userNameSpan = document.getElementById('user');
 
-// Container divs
+// Divs
 const voteContainer = document.getElementById('voteContainer');
-
+const newVoteOptionsDiv = document.getElementById('newVoteOptions');
 
 
 export {
@@ -83,6 +78,5 @@ export {
     newVoteDescription,
     userNameSpan,
     voteContainer,
-    newVoteOptionsCard,
-    newVoteOptionsInputFields
+    newVoteOptionsDiv
 }
