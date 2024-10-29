@@ -2,6 +2,7 @@
 const viewVoteModal = document.getElementById('viewVoteModal');
 const regModal = document.getElementById('regModal');
 const showRegModal = document.getElementById('showRegModal');
+const addVoteModal = document.getElementById('addVoteModal');
 
 // Bootstrap modal bodys and footers
 const regFormModalBody = document.getElementById('regFormModalBody');
@@ -14,6 +15,8 @@ const regForm = document.getElementById('regForm');
 const loginForm = document.getElementById('loginForm');
 const newVoteForm = document.getElementById('newVoteForm');
 
+// Bootstrap cards
+const newVoteOptionsCard = document.getElementById('newVoteOptions');
 
 // Input fields
 const regUsername = document.getElementById('regUsername');
@@ -24,6 +27,8 @@ const regPassword2 = document.getElementById('regPassword2');
 const newVoteTitle = document.getElementById('newVoteTitle');
 const newVoteDescription = document.getElementById('newVoteDescription');
 
+const newVoteOptionsInputFields = newVoteOptionsCard.querySelectorAll('input');
+
 // Buttons
 const regSubmitBtn = document.getElementById('regSubmit');
 const regReturnBtn = document.getElementById('regInfoReturnBtn');
@@ -33,6 +38,7 @@ const loginSubmitBtn = document.getElementById('loginSubmit');
 const voteSubmitBtn = document.getElementById('voteSubmit');
 const showAddVoteModalBtn = document.getElementById('showAddVoteModal');
 const addNewVoteSubmitBtn = document.getElementById('addVoteSubmit');
+const newVoteAddOptionBtn = document.getElementById('newVoteAddOption');
 
 const voteDeleteBtn = document.createElement('button');
 voteDeleteBtn.classList.add('btn', 'btn-danger');
@@ -44,10 +50,13 @@ const userNameSpan = document.getElementById('user');
 // Container divs
 const voteContainer = document.getElementById('voteContainer');
 
+
+
 export {
     viewVoteModal,
     regModal,
     showRegModal,
+    addVoteModal,
     regFormModalBody,
     regInfoModalBody,
     regFormModalFooter,
@@ -67,10 +76,13 @@ export {
     voteSubmitBtn,
     showAddVoteModalBtn,
     addNewVoteSubmitBtn,
+    newVoteAddOptionBtn,
     voteDeleteBtn,
     newVoteForm,
     newVoteTitle,
     newVoteDescription,
     userNameSpan,
-    voteContainer
+    voteContainer,
+    newVoteOptionsCard,
+    newVoteOptionsInputFields
 }

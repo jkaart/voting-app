@@ -1,10 +1,11 @@
-import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, voteEventHandler, newVoteEventHandler, deleteVoteEventHandler } from "./js/events/eventHandlers.js";
-import { regFullName, regUser, regPassword1, regPassword2, regReturnBtn, regSubmitBtn, loginSubmitBtn, logoutBtn, voteSubmitBtn, voteDeleteBtn, addNewVoteSubmitBtn } from "./js/htmlElements/htmlElements.js";
+import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, newVoteEventHandler, voteEventHandler, addNewVoteEventHandler, newVoteOptionEventHandler, deleteVoteEventHandler } from "./js/events/eventHandlers.js";
+import { regFullName, regUser, regPassword1, regPassword2, regReturnBtn, regSubmitBtn, loginSubmitBtn, logoutBtn, voteSubmitBtn, voteDeleteBtn, addNewVoteSubmitBtn, newVoteTitle, newVoteOptionsInputFields, newVoteDescription, newVoteOptionsCard, newVoteAddOptionBtn } from "./js/htmlElements/htmlElements.js";
 import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
 import { generateVoteCardMap } from "./js/functions/votesMap.js";
 import { votesData } from "./js/data/votes.js";
 import { readLocalStorageLoginStatus, readLocalStorageUserRole } from "./js/functions/readLocalStorage.js";
+import { generateNewVoteOptionField } from "./js/functions/generators.js";
 
 // Clear localStorage
 localStorage.removeItem('VotingApp');
@@ -93,7 +94,50 @@ loginSubmitBtn.addEventListener('click', (event) => {
 });
 
 voteDeleteBtn.addEventListener('click', (event) => { deleteVoteEventHandler(event, votes) });
-addNewVoteSubmitBtn.addEventListener('click', (event) => { newVoteEventHandler(event, votes) });
+
+newVoteTitle.addEventListener('input', (event) => {
+    const result = newVoteEventHandler(event);
+    if (result) {
+        for (const field of newVoteOptionsInputFields) {
+            field.removeAttribute('disabled');
+        }
+        newVoteAddOptionBtn.removeAttribute('disabled');
+    }
+    else {
+        addNewVoteSubmitBtn.setAttribute('disabled', '');
+        for (const field of newVoteOptionsInputFields) {
+            field.setAttribute('disabled', '');
+        }
+        newVoteAddOptionBtn.setAttribute('disabled', '');
+    }
+});
+
+newVoteAddOptionBtn.addEventListener('click', (event) => {
+    addNewVoteSubmitBtn.setAttribute('disabled', '');
+    const newField = generateNewVoteOptionField(newVoteOptionsCard.querySelectorAll('input').length + 1);
+    newVoteOptionsCard.insertBefore(newField, event.target.parentElement);
+})
+
+for (const field of newVoteOptionsInputFields) {
+    field.addEventListener('input', (event) => {
+        const result = newVoteOptionEventHandler(event);
+        const nextInput = event.target.parentElement.nextElementSibling.querySelector('input');
+        if (nextInput !== null) {
+            if (result) {
+                nextInput.removeAttribute('disabled');
+            }
+            else {
+                nextInput.setAttribute('disabled', '');
+            }
+        }
+        else {
+            addNewVoteSubmitBtn.removeAttribute('disabled');
+        }
+    });
+
+}
+
+addNewVoteSubmitBtn.addEventListener('click', (event) => { addNewVoteEventHandler(event, votes) });
 
 logoutBtn.addEventListener('click', logoutEventHandler);
 
@@ -107,3 +151,4 @@ voteSubmitBtn.addEventListener('click', (event) => {
         notification({ name, msg: message });
     }
 });
+

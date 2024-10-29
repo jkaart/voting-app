@@ -1,3 +1,6 @@
+import { newVoteOptionEventHandler } from "../events/eventHandlers.js";
+import { addNewVoteSubmitBtn } from "../htmlElements/htmlElements.js";
+
 const generateProgressBars = (options, voteId) => {
     let progressBars = "";
 
@@ -26,4 +29,30 @@ const generateVoteForm = (options, voteId) => {
     return inputs
 }
 
-export { generateProgressBars, generateVoteForm }
+const generateNewVoteOptionField = (optionId) => {
+    const div = document.createElement('div');
+    div.classList.add('form-group');
+    const label = document.createElement('label');
+    label.setAttribute('for', `newVoteOption${optionId}`);
+    label.innerText = `Option ${optionId}`;
+    const input = document.createElement('input');
+    input.setAttribute('type', 'text');
+    input.setAttribute('placeholder', `Vote option ${optionId}`);
+    input.classList.add('form-control');
+    input.id = `newVoteOption${optionId}`;
+    input.addEventListener('input', (event) => {
+        const result = newVoteOptionEventHandler(event)
+        if (result) {
+            addNewVoteSubmitBtn.removeAttribute('disabled');
+        }
+        else {
+            addNewVoteSubmitBtn.setAttribute('disabled', '');
+        }
+    });
+    div.appendChild(label);
+    div.appendChild(input);
+    return div;
+}
+
+
+export { generateProgressBars, generateVoteForm, generateNewVoteOptionField }

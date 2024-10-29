@@ -1,4 +1,4 @@
-import { validateFullName, validateUsername, validatePassword } from "../functions/validate.js";
+import { validateFullName, validateUsername, validatePassword, validateNewVote, validateNewVoteOption } from "../functions/validate.js";
 import { generateValidateErrorList } from "../functions/validateErrorList.js";
 import { User } from '../classes/User.js';
 import { VoteCard } from "../classes/VoteCard.js";
@@ -7,7 +7,7 @@ import { generateVoteForm } from "../functions/generators.js";
 import { readLocalStorageLoginStatus, readLocalStorageUserRole } from "../functions/readLocalStorage.js";
 import { loadUsers } from "../functions/loadUsers.js";
 import { usersData } from "../data/users.js";
-import { viewVoteModal, regForm, regUsername, regPassword1, regFullName, regModal, regSubmitBtn, newVoteForm, voteDeleteBtn, newVoteTitle, newVoteDescription } from "../htmlElements/htmlElements.js";
+import { viewVoteModal, regForm, regUsername, regPassword1, regFullName, regModal, regSubmitBtn, newVoteForm, voteDeleteBtn, newVoteTitle, newVoteDescription, newVoteOptionsInputFields } from "../htmlElements/htmlElements.js";
 
 const users = loadUsers(usersData);
 
@@ -153,7 +153,19 @@ const openViewVoteModalEventHandler = (voteData) => {
     }
 }
 
-const newVoteEventHandler = (event, votes) => {
+const newVoteEventHandler = (event) => {
+    const result = validateNewVote(event.target.value);
+    generateValidateErrorList(event, result);
+    return result.valid
+}
+
+const newVoteOptionEventHandler = (event) => {
+    const result = validateNewVoteOption(event.target.value);
+    generateValidateErrorList(event, result);
+    return result.valid
+}
+
+const addNewVoteEventHandler = (event, votes) => {
     const lastVoteID = Number([...votes.entries()].at(-1)[0])
     const voteID = String(lastVoteID + 1);
 
@@ -207,6 +219,8 @@ export {
     logoutEventHandler,
     voteEventHandler,
     openViewVoteModalEventHandler,
+    addNewVoteEventHandler,
+    newVoteOptionEventHandler,
     newVoteEventHandler,
     deleteVoteEventHandler,
 }

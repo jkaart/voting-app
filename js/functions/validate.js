@@ -84,6 +84,24 @@ const comparePasswords = (pw1, pw2) => {
     return { match, msg };
 }
 
+const validateNewVote = (text) => {
+    let msg = [];
+    let valid = true;
+    if (text.length < 5) {
+        msg.push('You need input 5 characters or over');
+        valid = false;
+    };
+    return {valid, msg};
+}
 
+const validateNewVoteOption = (text) => {
+    let msg = [];
+    let valid = true;
+    if (text.length < 1) {
+        msg.push('You need input 1 characters or over');
+        valid = false;
+    };
+    return {valid, msg};
+}
 
-export { validateFullName, validateUsername, validatePassword, comparePasswords }
+export { validateFullName, validateUsername, validatePassword, comparePasswords, validateNewVote, validateNewVoteOption }
