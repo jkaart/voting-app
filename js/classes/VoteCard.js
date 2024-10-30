@@ -27,6 +27,14 @@ const generateCardContainer = (voteData) => {
     return cardContainer
 }
 
+const calcTotalCount = (options) => {
+    let totalCount = 0;
+    for (const option of options) {
+        totalCount += option.voteCount;
+    }
+    return totalCount;
+}
+
 class VoteCard {
     #id
     constructor(id, title, description, options) {
@@ -34,9 +42,11 @@ class VoteCard {
         this.title = title;
         this.description = description;
         this.options = options;
-        this.totalVoteCount = 0;
+        this.totalVoteCount = calcTotalCount(this.options);
         this.voteContainer = voteContainer;
-        this.cardContainer = this.draw();
+        this.cardContainer = generateCardContainer(this.voteData);
+        this.cardContainer.children[0].addEventListener('click', () => { openViewVoteModalEventHandler(this.voteData) });
+        this.voteContainer.appendChild(this.cardContainer);
         this.cardBody = this.cardContainer.children[0].children[0];
         this.cardFooter = this.cardContainer.children[0].children[1];
         this.voteBody = this.cardBody.children[2];
@@ -46,27 +56,24 @@ class VoteCard {
     }
 
     get voteData() {
-        const voteData = { id: this.#id, title: this.title, description: this.description, options: this.options, totalVoteCount: this.totalVoteCount }
+        const voteData = { id: this.#id, title: this.title, description: this.description, options: this.options, totalVoteCount: this.totalVoteCount };
         return voteData
     }
 
     get id() {
-        return this.#id
+        return this.#id;
     }
 
     doVote(value) {
         if (value === '') return false;
-        const index = this.options.findIndex((element) => element.option == value)
-        this.totalVoteCount += 1;
+        const index = this.options.findIndex((element) => element.option == value);
         this.options[index].voteCount += 1;
+        this.updateTotalCounter();
         return true;
     }
 
-    draw() {
-        const cardContainer = generateCardContainer(this.voteData);
-        cardContainer.children[0].addEventListener('click', () => { openViewVoteModalEventHandler(this.voteData) });
-        this.voteContainer.appendChild(cardContainer);
-        return cardContainer
+    updateTotalCounter() {
+        this.totalVoteCount = calcTotalCount(this.options);
     }
 
     updateCounter() {
@@ -89,7 +96,7 @@ class VoteCard {
     }
 
     updateAll() {
-        this.updateCounter()
+        this.updateCounter();
         this.updateProgressBars();
         this.updateTotalVotes();
         return true
