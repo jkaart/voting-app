@@ -49,6 +49,8 @@ voteContainer.classList.add('row', 'row-cols-1', 'row-cols-md-2', 'row-cols-xl-3
 voteContainer.id = 'voteContainer';
 
 const newVoteOptionsDiv = document.getElementById('newVoteOptions');
+const toastDiv = document.getElementById('toast');
+const notificationMsg = document.getElementById('notificationMsg');
 
 export {
     viewVoteModal,
@@ -82,5 +84,7 @@ export {
     userNameSpan,
     mainContentDiv,
     voteContainer,
-    newVoteOptionsDiv
+    newVoteOptionsDiv,
+    toastDiv,
+    notificationMsg
 };

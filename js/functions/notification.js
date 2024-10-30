@@ -1,8 +1,6 @@
-import * as bootstrap from 'bootstrap';
+import { toastDiv, notificationMsg} from "../htmlElements/htmlElements.js";
 
 const notification = ({msg, name}) => {
-
-    const notificationMsg = document.getElementById('notificationMsg');
     notificationMsg.textContent = msg;
     notificationMsg.parentElement.classList.add('text-white');
     if (name === 'Error') {
@@ -17,7 +15,7 @@ const notification = ({msg, name}) => {
         notificationMsg.parentElement.classList.remove('bg-danger', 'bg-success', 'text-white');
     }
     
-    const toast = new bootstrap.Toast(document.getElementById('toast'));
+    const toast = new bootstrap.Toast(toastDiv);
     toast.show();
 };
 

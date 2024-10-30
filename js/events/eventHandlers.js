@@ -1,5 +1,3 @@
-import * as bootstrap from 'bootstrap';
-import md5 from 'md5';
 import { validateFullName, validateUsername, validatePassword, validateNewVote, validateNewVoteOption } from "../functions/validate.js";
 import { generateValidateErrorList } from "../functions/validateErrorList.js";
 import { User } from '../classes/User.js';
