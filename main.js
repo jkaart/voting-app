@@ -1,10 +1,10 @@
-import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, newVoteEventHandler, voteEventHandler, addNewVoteEventHandler, newVoteOptionEventHandler, deleteVoteEventHandler } from "./js/events/eventHandlers.js";
+import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, newVoteEventHandler, voteEventHandler, addNewVoteEventHandler, deleteVoteEventHandler } from "./js/events/eventHandlers.js";
 import * as htmlElements from "./js/htmlElements/htmlElements.js";
 import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
 import { generateVoteCardMap } from "./js/functions/votesMap.js";
 import { votesData } from "./js/data/votes.js";
-import { readLocalStorageLoginStatus, readLocalStorageUserRole } from "./js/functions/readLocalStorage.js";
+import { readLocalStorageUserRole } from "./js/functions/readLocalStorage.js";
 import { generateNewVoteOptionField } from "./js/functions/generators.js";
 
 // Clear localStorage
@@ -30,7 +30,7 @@ htmlElements.regFullName.addEventListener('input', (event) => {
 });
 
 htmlElements.regUser.addEventListener('input', (event) => {
-    const result = usernameEventHandler(event)
+    const result = usernameEventHandler(event);
     if (result) {
         htmlElements.regPassword1.removeAttribute('disabled');
     }
@@ -59,7 +59,7 @@ htmlElements.regPassword1.addEventListener('input', (event) => {
 });
 
 htmlElements.regPassword2.addEventListener('input', (event) => {
-    const result = comparePasswords(regPassword1.value, event.target.value);
+    const result = comparePasswords(htmlElements.regPassword1.value, event.target.value);
     let span = event.target.nextElementSibling;
     if (span === null) {
         span = document.createElement('span');
@@ -88,7 +88,7 @@ htmlElements.regReturnBtn.addEventListener('click', () => {
     htmlElements.regInfoModalBody.classList.add('d-none');
     htmlElements.regInfoModalFooter.classList.add('d-none');
     htmlElements.regForm.reset();
-})
+});
 
 htmlElements.regSubmitBtn.addEventListener('click', (event) => {
     regSubmitEventHandler(event);
@@ -98,32 +98,32 @@ htmlElements.loginSubmitBtn.addEventListener('click', (event) => {
     loginEventHandler(event);
 });
 
-htmlElements.voteDeleteBtn.addEventListener('click', (event) => { deleteVoteEventHandler(event, votes) });
+htmlElements.voteDeleteBtn.addEventListener('click', (event) => { deleteVoteEventHandler(event, votes); });
 
 htmlElements.newVoteTitle.addEventListener('input', (event) => {
     const result = newVoteEventHandler(event);
     if (result) {
-        for (const field of newVoteOptionsDiv.childNodes) {
+        for (const field of htmlElements.newVoteOptionsDiv.childNodes) {
             field.children[1].removeAttribute('disabled');
         }
         htmlElements.newVoteAddOptionBtn.removeAttribute('disabled');
     }
     else {
         htmlElements.addNewVoteSubmitBtn.setAttribute('disabled', '');
-        for (const field of newVoteOptionsDiv.childNodes) {
+        for (const field of htmlElements.newVoteOptionsDiv.childNodes) {
             field.children[1].setAttribute('disabled', '');
         }
         htmlElements.newVoteAddOptionBtn.setAttribute('disabled', '');
     }
 });
 
-htmlElements.newVoteAddOptionBtn.addEventListener('click', (event) => {
+htmlElements.newVoteAddOptionBtn.addEventListener('click', () => {
     htmlElements.addNewVoteSubmitBtn.setAttribute('disabled', '');
     const newField = generateNewVoteOptionField(htmlElements.newVoteOptionsDiv.childElementCount + 1);
     htmlElements.newVoteOptionsDiv.appendChild(newField);
-})
+});
 
-htmlElements.addNewVoteSubmitBtn.addEventListener('click', (event) => { addNewVoteEventHandler(event, votes) });
+htmlElements.addNewVoteSubmitBtn.addEventListener('click', (event) => { addNewVoteEventHandler(event, votes); });
 
 htmlElements.logoutBtn.addEventListener('click', logoutEventHandler);
 
@@ -142,14 +142,14 @@ htmlElements.addVoteModal.addEventListener('hide.bs.modal', () => {
     const inputs = htmlElements.newVoteForm.getElementsByTagName('input');
     for (const [index, input] of Object.entries(inputs)) {
         input.classList.remove('is-valid', 'is-invalid');
-        if (index == 0) {
-            input.removeAttribute('disabled')
+        if (index === 0) {
+            input.removeAttribute('disabled');
         }
         else {
             input.setAttribute('disabled', '');
         }
     }
-})
+});
 
 htmlElements.addVoteModal.addEventListener('show.bs.modal', () => {
     htmlElements.newVoteOptionsDiv.innerHTML = '';
@@ -160,4 +160,4 @@ htmlElements.addVoteModal.addEventListener('show.bs.modal', () => {
     }
     htmlElements.newVoteAddOptionBtn.setAttribute('disabled', '');
     htmlElements.addNewVoteSubmitBtn.setAttribute('disabled', '');
-})
+});

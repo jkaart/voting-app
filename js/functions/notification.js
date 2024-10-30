@@ -1,7 +1,9 @@
+import * as bootstrap from 'bootstrap';
+
 const notification = ({msg, name}) => {
 
     const notificationMsg = document.getElementById('notificationMsg');
-    notificationMsg.textContent = msg
+    notificationMsg.textContent = msg;
     notificationMsg.parentElement.classList.add('text-white');
     if (name === 'Error') {
         notificationMsg.parentElement.classList.remove('bg-success');
@@ -17,6 +19,6 @@ const notification = ({msg, name}) => {
     
     const toast = new bootstrap.Toast(document.getElementById('toast'));
     toast.show();
-}
+};
 
-export { notification }
+export { notification };

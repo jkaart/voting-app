@@ -1,7 +1,7 @@
 import { newVoteOptionEventHandler } from "../events/eventHandlers.js";
 import { addNewVoteSubmitBtn } from "../htmlElements/htmlElements.js";
 
-const generateProgressBars = (options, voteId) => {
+const generateProgressBars = (options) => {
     let progressBars = "";
 
     for (const value of options) {
@@ -10,10 +10,10 @@ const generateProgressBars = (options, voteId) => {
             <span class="float-end voteCounter">${value.voteCount}</span>
             <div class="progress voteProgress" role="progressbar" aria-label="Vote progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                 <div class="progress-bar" style="width: 0%"></div>
-            </div>`
+            </div>`;
     }
-    return progressBars
-}
+    return progressBars;
+};
 
 const generateVoteForm = (options, voteId) => {
     let inputs = `<form id='formVote${voteId}'>`;
@@ -26,8 +26,8 @@ const generateVoteForm = (options, voteId) => {
             </div>`;
     }
     inputs += `</form`;
-    return inputs
-}
+    return inputs;
+};
 
 const generateNewVoteOptionField = (optionId) => {
     const div = document.createElement('div');
@@ -41,7 +41,7 @@ const generateNewVoteOptionField = (optionId) => {
     input.classList.add('form-control');
     input.id = `newVoteOption${optionId}`;
     input.addEventListener('input', (event) => {
-        const result = newVoteOptionEventHandler(event)
+        const result = newVoteOptionEventHandler(event);
         if (result && optionId > 1) {
             addNewVoteSubmitBtn.removeAttribute('disabled');
         }
@@ -52,7 +52,7 @@ const generateNewVoteOptionField = (optionId) => {
     div.appendChild(label);
     div.appendChild(input);
     return div;
-}
+};
 
 
-export { generateProgressBars, generateVoteForm, generateNewVoteOptionField }
+export { generateProgressBars, generateVoteForm, generateNewVoteOptionField };

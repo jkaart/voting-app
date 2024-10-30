@@ -11,5 +11,5 @@ const votesData = [
         description: 'Mikä on paras vuoden aika?',
         options: [{ option: 'Talvi', voteCount: 0 }, { option: 'Kevät', voteCount: 0 }, { option: 'Kesä', voteCount: 0 }, { option: 'Syksy', voteCount: 0 }],
     }
-]
-export { votesData }
+];
+export { votesData };

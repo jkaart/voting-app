@@ -83,4 +83,4 @@ export {
     mainContentDiv,
     voteContainer,
     newVoteOptionsDiv
-}
+};

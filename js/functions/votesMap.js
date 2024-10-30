@@ -7,6 +7,6 @@ const generateVoteCardMap = (votes) => {
         map.set(voteData.id, new VoteCard(voteData.id, voteData.title, voteData.description, voteData.options, voteEventHandler));
     });
     return map;
-}
+};
 
-export { generateVoteCardMap }
+export { generateVoteCardMap };

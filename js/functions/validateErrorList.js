@@ -23,6 +23,6 @@ const generateValidateErrorList = (event, result) => {
             ul.remove();
         }
     }
-}
+};
 
-export { generateValidateErrorList }
+export { generateValidateErrorList };

@@ -23,9 +23,9 @@ const generateCardContainer = (voteData) => {
             </div>
             <div class='card-footer'>
             </div>
-        </div>`
-    return cardContainer
-}
+        </div>`;
+    return cardContainer;
+};
 
 const calcTotalCount = (options) => {
     let totalCount = 0;
@@ -33,10 +33,10 @@ const calcTotalCount = (options) => {
         totalCount += option.voteCount;
     }
     return totalCount;
-}
+};
 
 class VoteCard {
-    #id
+    #id;
     constructor(id, title, description, options) {
         this.#id = id;
         this.title = title;
@@ -46,7 +46,7 @@ class VoteCard {
         this.totalVoteCount = calcTotalCount(this.options);
         this.voteContainer = voteContainer;
         this.cardContainer = generateCardContainer(this.voteData);
-        this.cardContainer.children[0].addEventListener('click', () => { openViewVoteModalEventHandler(this.voteData) });
+        this.cardContainer.children[0].addEventListener('click', () => { openViewVoteModalEventHandler(this.voteData); });
         this.voteContainer.appendChild(this.cardContainer);
         this.cardHeader = this.cardContainer.children[0].children[0];
         this.cardBody = this.cardContainer.children[0].children[1];
@@ -59,7 +59,7 @@ class VoteCard {
 
     get voteData() {
         const voteData = { id: this.#id, title: this.title, description: this.description, options: this.options, totalVoteCount: this.totalVoteCount, votedUsers: this.votedUsers };
-        return voteData
+        return voteData;
     }
 
     get id() {
@@ -68,7 +68,7 @@ class VoteCard {
 
     doVote(value, userId) {
         if (value === '') return false;
-        const index = this.options.findIndex((element) => element.option == value);
+        const index = this.options.findIndex((element) => element.option === value);
         this.options[index].voteCount += 1;
         this.votedUsers.push(userId);
         this.updateTotalCounter();
@@ -89,21 +89,21 @@ class VoteCard {
         for (const [key, value] of this.options.entries()) {
             const percent = calcPercentage(value.voteCount, this.totalVoteCount);
             this.voteProgressDivs[key].setAttribute('aria-valuenow', percent);
-            this.voteProgressDivs[key].children[0].style.width = `${percent}%`
-            this.voteProgressDivs[key].children[0].textContent = `${percent}%`
+            this.voteProgressDivs[key].children[0].style.width = `${percent}%`;
+            this.voteProgressDivs[key].children[0].textContent = `${percent}%`;
         }
     }
 
     updateTotalVotes() {
-        this.totalVotesH5.textContent = `Total votes: ${this.totalVoteCount}`
+        this.totalVotesH5.textContent = `Total votes: ${this.totalVoteCount}`;
     }
 
     updateAll() {
         this.updateCounter();
         this.updateProgressBars();
         this.updateTotalVotes();
-        return true
+        return true;
     }
 }
 
-export { VoteCard }
+export { VoteCard };

@@ -1,3 +1,5 @@
+import * as bootstrap from 'bootstrap';
+import md5 from 'md5';
 import { validateFullName, validateUsername, validatePassword, validateNewVote, validateNewVoteOption } from "../functions/validate.js";
 import { generateValidateErrorList } from "../functions/validateErrorList.js";
 import { User } from '../classes/User.js';
@@ -17,22 +19,22 @@ const fullNameEventHandler = (event) => {
     const result = validateFullName(event.target.value);
     generateValidateErrorList(event, result);
 
-    return result.valid
-}
+    return result.valid;
+};
 
 const usernameEventHandler = (event) => {
     const result = validateUsername(event.target.value);
     generateValidateErrorList(event, result);
 
-    return result.valid
-}
+    return result.valid;
+};
 
 const passwordEventHandler = (event) => {
     const result = validatePassword(event.target.value);
     generateValidateErrorList(event, result);
 
-    return result.valid
-}
+    return result.valid;
+};
 
 const regSubmitEventHandler = (event) => {
     event.preventDefault();
@@ -49,8 +51,8 @@ const regSubmitEventHandler = (event) => {
             usersData.push(user);
             users.push(new User(user));
 
-            console.log(usersData)
-            console.log(users)
+            console.log(usersData);
+            console.log(users);
             //event.target.submit();
 
             throw { name: 'Info', message: `${userName} is registered successfully!` };
@@ -99,20 +101,20 @@ const loginEventHandler = (event) => {
         }
     }
     catch ({ name, message }) {
-        notification({ name, msg: message })
+        notification({ name, msg: message });
     }
     finally {
         bootstrap.Modal.getInstance(document.getElementById('logonModal')).hide();
     }
-}
+};
 
 const logoutEventHandler = () => {
     const result = users.find(({ userID }) => userID === JSON.parse(localStorage.getItem('VotingApp')).userID);
     result.logOut();
-    notification({ name: 'Info', msg: 'You are logged out' })
+    notification({ name: 'Info', msg: 'You are logged out' });
     //window.location.reload();
 
-}
+};
 
 const voteEventHandler = (event, votes) => {
     try {
@@ -130,17 +132,15 @@ const voteEventHandler = (event, votes) => {
     catch ({ name, message }) {
         notification({ name, msg: message });
     }
-}
+};
 
 const openViewVoteModalEventHandler = (voteData) => {
     try {
         
         if (!readLocalStorageLoginStatus()) throw { name: 'Info', message: 'You need log in!' };
         const userId = readLocalStorageUserId();
-        console.log(userId)
         if (userId === null) throw new Error ('UserId missing or it is null');
-        if (voteData.votedUsers.includes(userId)) throw {name: 'Info', message: 'You have already voted this'};
-        const viewVoteModalHeader = viewVoteModal.children[0].children[0].children[0];
+        if (readLocalStorageUserRole() === 'user' && voteData.votedUsers.includes(userId)) throw {name: 'Info', message: 'You have already voted this'};
         const viewVoteModalBody = viewVoteModal.children[0].children[0].children[1];
         const viewVoteModalFooter = viewVoteModal.children[0].children[0].children[2];
         const inputs = generateVoteForm(voteData.options, voteData.id);
@@ -154,21 +154,21 @@ const openViewVoteModalEventHandler = (voteData) => {
         bootstrap.Modal.getOrCreateInstance(viewVoteModal).show();
     }
     catch ({ name, message }) {
-        notification({ name, msg: message })
+        notification({ name, msg: message });
     }
-}
+};
 
 const newVoteEventHandler = (event) => {
     const result = validateNewVote(event.target.value);
     generateValidateErrorList(event, result);
-    return result.valid
-}
+    return result.valid;
+};
 
 const newVoteOptionEventHandler = (event) => {
     const result = validateNewVoteOption(event.target.value);
     generateValidateErrorList(event, result);
-    return result.valid
-}
+    return result.valid;
+};
 
 const addNewVoteEventHandler = (event, votes) => {
     try {
@@ -193,17 +193,17 @@ const addNewVoteEventHandler = (event, votes) => {
 
         for (const input of inputs) {
             options.push({ 'option': input.value, 'voteCount': 0 });
-        };
+        }
 
         votes.set(voteID, new VoteCard(voteID, title, description, options, voteEventHandler));
         console.log(votes);
         bootstrap.Modal.getOrCreateInstance(addVoteModal).hide();
-        throw { name: 'Info', message: 'Vote added successfully!' }
+        throw { name: 'Info', message: 'Vote added successfully!' };
     }
     catch ({ name, message }) {
         notification({ name, msg: message });
     }
-}
+};
 
 const deleteVoteEventHandler = (event, votes) => {
     try {
@@ -224,16 +224,16 @@ const deleteVoteEventHandler = (event, votes) => {
         votes.delete(voteId);
 
         if (votes.size === 0) {
-            mainContentDiv.innerHTML = '<div class="d-flex align-items-center justify-content-center vh-100"><h1 class="text-center">No votes available!</h1></div>'
+            mainContentDiv.innerHTML = '<div class="d-flex align-items-center justify-content-center vh-100"><h1 class="text-center">No votes available!</h1></div>';
         }
 
         console.log(votes);
         throw { name: 'Info', message: 'Vote deleted successfully' };
     }
     catch ({ name, message }) {
-        notification({ name, msg: message })
+        notification({ name, msg: message });
     }
-}
+};
 
 export {
     fullNameEventHandler,
@@ -248,4 +248,4 @@ export {
     newVoteOptionEventHandler,
     newVoteEventHandler,
     deleteVoteEventHandler,
-}
+};

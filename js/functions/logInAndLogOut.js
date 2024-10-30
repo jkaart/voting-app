@@ -21,7 +21,7 @@ const login = () => {
     if (readLocalStorageUserRole() === 'admin') {
         showAddVoteModalBtn.classList.remove('d-none');
     }
-}
+};
 
 const logout = () => {
     // Hide logout button
@@ -39,7 +39,7 @@ const logout = () => {
 
     showAddVoteModalBtn.classList.add('d-none');
 
-    console.log('logout')
-}
+    console.log('logout');
+};
 
-export { login, logout }
+export { login, logout };
