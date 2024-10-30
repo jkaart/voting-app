@@ -4,7 +4,7 @@ import { User } from '../classes/User.js';
 import { VoteCard } from "../classes/VoteCard.js";
 import { notification } from "../functions/notification.js";
 import { generateVoteForm } from "../functions/generators.js";
-import { readLocalStorageLoginStatus, readLocalStorageUserRole } from "../functions/readLocalStorage.js";
+import { readLocalStorageLoginStatus, readLocalStorageUserId, readLocalStorageUserRole } from "../functions/readLocalStorage.js";
 import { loadUsers } from "../functions/loadUsers.js";
 import { usersData } from "../data/users.js";
 import { viewVoteModal, regForm, regUsername, regPassword1, regFullName, regModal, regSubmitBtn, newVoteForm, voteDeleteBtn, newVoteTitle, newVoteDescription, addVoteModal, mainContentDiv, voteContainer } from "../htmlElements/htmlElements.js";
@@ -121,7 +121,7 @@ const voteEventHandler = (event, votes) => {
 
         const vote = votes.get(voteId);
         const voteValue = form.elements[`vote${voteId}Radios`].value;
-        if (!vote.doVote(voteValue)) throw new Error('Chooose an option!');
+        if (!vote.doVote(voteValue, readLocalStorageUserId())) throw new Error('Choose an option!');
         if (vote.updateAll()) {
             bootstrap.Modal.getOrCreateInstance(viewVoteModal).hide();
             throw { name: 'Info', message: 'Vote registered successfully!' };
@@ -134,7 +134,12 @@ const voteEventHandler = (event, votes) => {
 
 const openViewVoteModalEventHandler = (voteData) => {
     try {
+        
         if (!readLocalStorageLoginStatus()) throw { name: 'Info', message: 'You need log in!' };
+        const userId = readLocalStorageUserId();
+        console.log(userId)
+        if (userId === null) throw new Error ('UserId missing or it is null');
+        if (voteData.votedUsers.includes(userId)) throw {name: 'Info', message: 'You have already voted this'};
         const viewVoteModalHeader = viewVoteModal.children[0].children[0].children[0];
         const viewVoteModalBody = viewVoteModal.children[0].children[0].children[1];
         const viewVoteModalFooter = viewVoteModal.children[0].children[0].children[2];

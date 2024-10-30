@@ -42,6 +42,7 @@ class VoteCard {
         this.title = title;
         this.description = description;
         this.options = options;
+        this.votedUsers = [];
         this.totalVoteCount = calcTotalCount(this.options);
         this.voteContainer = voteContainer;
         this.cardContainer = generateCardContainer(this.voteData);
@@ -49,7 +50,6 @@ class VoteCard {
         this.voteContainer.appendChild(this.cardContainer);
         this.cardHeader = this.cardContainer.children[0].children[0];
         this.cardBody = this.cardContainer.children[0].children[1];
-        console.log(this.cardBody)
         this.cardFooter = this.cardContainer.children[0].children[2];
         this.voteCounterSpans = this.cardBody.querySelectorAll('span.voteCounter');
         this.voteProgressDivs = this.cardBody.querySelectorAll('div.voteProgress');
@@ -58,7 +58,7 @@ class VoteCard {
     }
 
     get voteData() {
-        const voteData = { id: this.#id, title: this.title, description: this.description, options: this.options, totalVoteCount: this.totalVoteCount };
+        const voteData = { id: this.#id, title: this.title, description: this.description, options: this.options, totalVoteCount: this.totalVoteCount, votedUsers: this.votedUsers };
         return voteData
     }
 
@@ -66,10 +66,11 @@ class VoteCard {
         return this.#id;
     }
 
-    doVote(value) {
+    doVote(value, userId) {
         if (value === '') return false;
         const index = this.options.findIndex((element) => element.option == value);
         this.options[index].voteCount += 1;
+        this.votedUsers.push(userId);
         this.updateTotalCounter();
         return true;
     }

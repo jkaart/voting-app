@@ -14,4 +14,11 @@ const readLocalStorageUserRole = () => {
     return item.role;
 }
 
-export { readLocalStorageLoginStatus, readLocalStorageUserRole }
+const readLocalStorageUserId = () => {
+    if (localStorage.getItem('VotingApp') === null) return null;
+    const item = JSON.parse(localStorage.getItem('VotingApp'));
+    if (item === null) return null;
+    return item.userID;
+}
+
+export { readLocalStorageLoginStatus, readLocalStorageUserRole, readLocalStorageUserId }
