@@ -1,5 +1,5 @@
 import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, newVoteEventHandler, voteEventHandler, addNewVoteEventHandler, newVoteOptionEventHandler, deleteVoteEventHandler } from "./js/events/eventHandlers.js";
-import { regFullName, regUser, regPassword1, regPassword2, regReturnBtn, regSubmitBtn, loginSubmitBtn, logoutBtn, voteSubmitBtn, voteDeleteBtn, newVoteForm, addNewVoteSubmitBtn, newVoteTitle, newVoteAddOptionBtn, addVoteModal, newVoteOptionsDiv, mainContentDiv, voteContainer } from "./js/htmlElements/htmlElements.js";
+import * as htmlElements from "./js/htmlElements/htmlElements.js";
 import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
 import { generateVoteCardMap } from "./js/functions/votesMap.js";
@@ -12,53 +12,53 @@ localStorage.removeItem('VotingApp');
 
 const votes = generateVoteCardMap(votesData);
 if (votes.length === 0) {
-    mainContentDiv.innerHTML = '';
+    htmlElements.mainContentDiv.innerHTML = '';
 }
 else {
-    mainContentDiv.appendChild(voteContainer);
+    htmlElements.mainContentDiv.appendChild(htmlElements.voteContainer);
 }
 
-regFullName.addEventListener('input', (event) => {
+htmlElements.regFullName.addEventListener('input', (event) => {
     const result = fullNameEventHandler(event);
     if (result) {
-        regUser.removeAttribute('disabled');
+        htmlElements.regUser.removeAttribute('disabled');
     }
     else {
-        regUser.setAttribute('disabled', '');
+        htmlElements.regUser.setAttribute('disabled', '');
     }
-    regSubmitBtn.setAttribute('disabled', '');
+    htmlElements.regSubmitBtn.setAttribute('disabled', '');
 });
 
-regUser.addEventListener('input', (event) => {
+htmlElements.regUser.addEventListener('input', (event) => {
     const result = usernameEventHandler(event)
     if (result) {
-        regPassword1.removeAttribute('disabled');
+        htmlElements.regPassword1.removeAttribute('disabled');
     }
     else {
-        regPassword1.setAttribute('disabled', '');
+        htmlElements.regPassword1.setAttribute('disabled', '');
     }
 
 });
 
-regPassword1.addEventListener('input', (event) => {
-    regUser.setAttribute('disabled', '');
-    regFullName.setAttribute('disabled', '');
+htmlElements.regPassword1.addEventListener('input', (event) => {
+    htmlElements.regUser.setAttribute('disabled', '');
+    htmlElements.regFullName.setAttribute('disabled', '');
     const result = passwordEventHandler(event);
-    regPassword2.value = '';
+    htmlElements.regPassword2.value = '';
     if (result) {
-        regPassword2.removeAttribute('disabled');
+        htmlElements.regPassword2.removeAttribute('disabled');
     }
     else {
-        regSubmitBtn.setAttribute('disabled', '');
-        regPassword2.setAttribute('disabled', '');
+        htmlElements.regSubmitBtn.setAttribute('disabled', '');
+        htmlElements.regPassword2.setAttribute('disabled', '');
     }
     if (event.target.value.length === 0) {
-        regUser.removeAttribute('disabled');
-        regFullName.removeAttribute('disabled');
+        htmlElements.regUser.removeAttribute('disabled');
+        htmlElements.regFullName.removeAttribute('disabled');
     }
 });
 
-regPassword2.addEventListener('input', (event) => {
+htmlElements.regPassword2.addEventListener('input', (event) => {
     const result = comparePasswords(regPassword1.value, event.target.value);
     let span = event.target.nextElementSibling;
     if (span === null) {
@@ -69,65 +69,65 @@ regPassword2.addEventListener('input', (event) => {
     event.target.after(span);
 
     if (result.match) {
-        regSubmitBtn.removeAttribute('disabled');
+        htmlElements.regSubmitBtn.removeAttribute('disabled');
         event.target.classList.remove('is-invalid');
         event.target.classList.add('is-valid');
     }
     else {
-        regSubmitBtn.setAttribute('disabled', '');
+        htmlElements.regSubmitBtn.setAttribute('disabled', '');
         event.target.classList.remove('is-valid');
         event.target.classList.add('is-invalid');
         //span.remove();
     }
 });
 
-regReturnBtn.addEventListener('click', () => {
-    document.getElementById('regFormModalBody').classList.remove('d-none');
-    document.getElementById('regFormModalFooter').classList.remove('d-none');
+htmlElements.regReturnBtn.addEventListener('click', () => {
+    htmlElements.regFormModalBody.classList.remove('d-none');
+    htmlElements.regFormModalFooter.classList.remove('d-none');
 
-    document.getElementById('regInfoModalBody').classList.add('d-none');
-    document.getElementById('regInfoModalFooter').classList.add('d-none');
-    regForm.reset();
+    htmlElements.regInfoModalBody.classList.add('d-none');
+    htmlElements.regInfoModalFooter.classList.add('d-none');
+    htmlElements.regForm.reset();
 })
 
-regSubmitBtn.addEventListener('click', (event) => {
+htmlElements.regSubmitBtn.addEventListener('click', (event) => {
     regSubmitEventHandler(event);
 });
 
-loginSubmitBtn.addEventListener('click', (event) => {
+htmlElements.loginSubmitBtn.addEventListener('click', (event) => {
     loginEventHandler(event);
 });
 
-voteDeleteBtn.addEventListener('click', (event) => { deleteVoteEventHandler(event, votes) });
+htmlElements.voteDeleteBtn.addEventListener('click', (event) => { deleteVoteEventHandler(event, votes) });
 
-newVoteTitle.addEventListener('input', (event) => {
+htmlElements.newVoteTitle.addEventListener('input', (event) => {
     const result = newVoteEventHandler(event);
     if (result) {
         for (const field of newVoteOptionsDiv.childNodes) {
             field.children[1].removeAttribute('disabled');
         }
-        newVoteAddOptionBtn.removeAttribute('disabled');
+        htmlElements.newVoteAddOptionBtn.removeAttribute('disabled');
     }
     else {
-        addNewVoteSubmitBtn.setAttribute('disabled', '');
+        htmlElements.addNewVoteSubmitBtn.setAttribute('disabled', '');
         for (const field of newVoteOptionsDiv.childNodes) {
             field.children[1].setAttribute('disabled', '');
         }
-        newVoteAddOptionBtn.setAttribute('disabled', '');
+        htmlElements.newVoteAddOptionBtn.setAttribute('disabled', '');
     }
 });
 
-newVoteAddOptionBtn.addEventListener('click', (event) => {
-    addNewVoteSubmitBtn.setAttribute('disabled', '');
-    const newField = generateNewVoteOptionField(newVoteOptionsDiv.childElementCount + 1);
-    newVoteOptionsDiv.appendChild(newField);
+htmlElements.newVoteAddOptionBtn.addEventListener('click', (event) => {
+    htmlElements.addNewVoteSubmitBtn.setAttribute('disabled', '');
+    const newField = generateNewVoteOptionField(htmlElements.newVoteOptionsDiv.childElementCount + 1);
+    htmlElements.newVoteOptionsDiv.appendChild(newField);
 })
 
-addNewVoteSubmitBtn.addEventListener('click', (event) => { addNewVoteEventHandler(event, votes) });
+htmlElements.addNewVoteSubmitBtn.addEventListener('click', (event) => { addNewVoteEventHandler(event, votes) });
 
-logoutBtn.addEventListener('click', logoutEventHandler);
+htmlElements.logoutBtn.addEventListener('click', logoutEventHandler);
 
-voteSubmitBtn.addEventListener('click', (event) => {
+htmlElements.voteSubmitBtn.addEventListener('click', (event) => {
     try {
         if (!readLocalStorageUserRole()) throw { name: 'Info', message: 'You need log in' };
         voteEventHandler(event, votes);
@@ -137,9 +137,9 @@ voteSubmitBtn.addEventListener('click', (event) => {
     }
 });
 
-addVoteModal.addEventListener('hide.bs.modal', () => {
-    newVoteForm.reset();
-    const inputs = newVoteForm.getElementsByTagName('input');
+htmlElements.addVoteModal.addEventListener('hide.bs.modal', () => {
+    htmlElements.newVoteForm.reset();
+    const inputs = htmlElements.newVoteForm.getElementsByTagName('input');
     for (const [index, input] of Object.entries(inputs)) {
         input.classList.remove('is-valid', 'is-invalid');
         if (index == 0) {
@@ -151,13 +151,13 @@ addVoteModal.addEventListener('hide.bs.modal', () => {
     }
 })
 
-addVoteModal.addEventListener('show.bs.modal', () => {
-    newVoteOptionsDiv.innerHTML = '';
+htmlElements.addVoteModal.addEventListener('show.bs.modal', () => {
+    htmlElements.newVoteOptionsDiv.innerHTML = '';
     for (let index = 1; index < 3; index++) {
         const optionField = generateNewVoteOptionField(index);
         optionField.children[1].setAttribute('disabled', '');
-        newVoteOptionsDiv.appendChild(optionField);
+        htmlElements.newVoteOptionsDiv.appendChild(optionField);
     }
-    newVoteAddOptionBtn.setAttribute('disabled', '');
-    addNewVoteSubmitBtn.setAttribute('disabled', '');
+    htmlElements.newVoteAddOptionBtn.setAttribute('disabled', '');
+    htmlElements.addNewVoteSubmitBtn.setAttribute('disabled', '');
 })
