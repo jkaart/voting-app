@@ -45,7 +45,7 @@ const userNameSpan = document.getElementById('user');
 // Divs
 const mainContentDiv = document.getElementById('mainContentDiv');
 const voteContainer = document.createElement('div');
-voteContainer.classList.add('row', 'row-cols-1', 'row-cols-md-3', 'g-4');
+voteContainer.classList.add('row', 'row-cols-1', 'row-cols-md-2', 'row-cols-xl-3' , 'g-4');
 voteContainer.id = 'voteContainer';
 
 const newVoteOptionsDiv = document.getElementById('newVoteOptions');
