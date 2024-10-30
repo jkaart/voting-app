@@ -1,5 +1,5 @@
 const calcPercentage = (value, total) => {
-    return (100 * value) / total;
+    return Math.round((100 * value) / total);
 
 }
 export { calcPercentage }
