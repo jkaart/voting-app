@@ -1,3 +1,5 @@
+'use strict';
+
 import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, newVoteEventHandler, voteEventHandler, addNewVoteEventHandler, deleteVoteEventHandler } from "./js/events/eventHandlers.js";
 import * as htmlElements from "./js/htmlElements/htmlElements.js";
 import { notification } from "./js/functions/notification.js";
