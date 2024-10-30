@@ -1,5 +1,5 @@
 import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, newVoteEventHandler, voteEventHandler, addNewVoteEventHandler, newVoteOptionEventHandler, deleteVoteEventHandler } from "./js/events/eventHandlers.js";
-import { regFullName, regUser, regPassword1, regPassword2, regReturnBtn, regSubmitBtn, loginSubmitBtn, logoutBtn, voteSubmitBtn, voteDeleteBtn, newVoteForm, addNewVoteSubmitBtn, newVoteTitle, newVoteAddOptionBtn, addVoteModal, newVoteOptionsDiv } from "./js/htmlElements/htmlElements.js";
+import { regFullName, regUser, regPassword1, regPassword2, regReturnBtn, regSubmitBtn, loginSubmitBtn, logoutBtn, voteSubmitBtn, voteDeleteBtn, newVoteForm, addNewVoteSubmitBtn, newVoteTitle, newVoteAddOptionBtn, addVoteModal, newVoteOptionsDiv, mainContentDiv, voteContainer } from "./js/htmlElements/htmlElements.js";
 import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
 import { generateVoteCardMap } from "./js/functions/votesMap.js";
@@ -11,7 +11,12 @@ import { generateNewVoteOptionField } from "./js/functions/generators.js";
 localStorage.removeItem('VotingApp');
 
 const votes = generateVoteCardMap(votesData);
-console.log(votes)
+if (votes.length === 0) {
+    mainContentDiv.innerHTML = '';
+}
+else {
+    mainContentDiv.appendChild(voteContainer);
+}
 
 regFullName.addEventListener('input', (event) => {
     const result = fullNameEventHandler(event);
@@ -97,7 +102,6 @@ voteDeleteBtn.addEventListener('click', (event) => { deleteVoteEventHandler(even
 
 newVoteTitle.addEventListener('input', (event) => {
     const result = newVoteEventHandler(event);
-    console.log(newVoteOptionsDiv)
     if (result) {
         for (const field of newVoteOptionsDiv.childNodes) {
             field.children[1].removeAttribute('disabled');

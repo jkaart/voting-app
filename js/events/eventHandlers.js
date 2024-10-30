@@ -7,7 +7,7 @@ import { generateVoteForm } from "../functions/generators.js";
 import { readLocalStorageLoginStatus, readLocalStorageUserRole } from "../functions/readLocalStorage.js";
 import { loadUsers } from "../functions/loadUsers.js";
 import { usersData } from "../data/users.js";
-import { viewVoteModal, regForm, regUsername, regPassword1, regFullName, regModal, regSubmitBtn, newVoteForm, voteDeleteBtn, newVoteTitle, newVoteDescription } from "../htmlElements/htmlElements.js";
+import { viewVoteModal, regForm, regUsername, regPassword1, regFullName, regModal, regSubmitBtn, newVoteForm, voteDeleteBtn, newVoteTitle, newVoteDescription, addVoteModal, mainContentDiv, voteContainer } from "../htmlElements/htmlElements.js";
 
 const users = loadUsers(usersData);
 
@@ -166,22 +166,38 @@ const newVoteOptionEventHandler = (event) => {
 }
 
 const addNewVoteEventHandler = (event, votes) => {
-    const lastVoteID = Number([...votes.entries()].at(-1)[0])
-    const voteID = String(lastVoteID + 1);
+    try {
+        if (!readLocalStorageLoginStatus()) throw new Error('You need log in!');
+        if (readLocalStorageUserRole() !== 'admin') throw new Error('You are not admin');
 
-    const title = newVoteTitle.value;
-    const description = newVoteDescription.value;
+        let voteID;
+        if (votes.size === 0) {
+            mainContentDiv.innerHTML = '';
+            mainContentDiv.appendChild(voteContainer);
+            voteID = '0';
+        }
+        else {
+            voteID = String(Number(Array.from(votes.keys()).pop()) + 1);
+        }
 
-    const inputs = newVoteForm.children[1].getElementsByTagName('input');
-    const options = [];
-    
-    console.log(inputs)
-    for (const input of inputs) {
-        options.push({'option':input.value, 'voteCount': 0});
-    };
+        const title = newVoteTitle.value;
+        const description = newVoteDescription.value;
 
-    votes.set(voteID, new VoteCard(voteID, title, description, options, voteEventHandler));
-    console.log(votes);
+        const inputs = newVoteForm.children[1].getElementsByTagName('input');
+        const options = [];
+
+        for (const input of inputs) {
+            options.push({ 'option': input.value, 'voteCount': 0 });
+        };
+
+        votes.set(voteID, new VoteCard(voteID, title, description, options, voteEventHandler));
+        console.log(votes);
+        bootstrap.Modal.getOrCreateInstance(addVoteModal).hide();
+        throw { name: 'Info', message: 'Vote added successfully!' }
+    }
+    catch ({ name, message }) {
+        notification({ name, msg: message });
+    }
 }
 
 const deleteVoteEventHandler = (event, votes) => {
@@ -202,8 +218,12 @@ const deleteVoteEventHandler = (event, votes) => {
         // delete the vote from map
         votes.delete(voteId);
 
+        if (votes.size === 0) {
+            mainContentDiv.innerHTML = '<div class="d-flex align-items-center justify-content-center vh-100"><h1 class="text-center">No votes available!</h1></div>'
+        }
+
         console.log(votes);
-        throw {name: 'Info', message: 'Vote deleted successfully'};
+        throw { name: 'Info', message: 'Vote deleted successfully' };
     }
     catch ({ name, message }) {
         notification({ name, msg: message })

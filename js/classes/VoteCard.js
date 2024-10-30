@@ -35,7 +35,7 @@ class VoteCard {
         this.description = description;
         this.options = options;
         this.totalVoteCount = 0;
-        this.voteContainer = voteContainer.children[0];
+        this.voteContainer = voteContainer;
         this.cardContainer = this.draw();
         this.cardBody = this.cardContainer.children[0].children[0];
         this.cardFooter = this.cardContainer.children[0].children[1];

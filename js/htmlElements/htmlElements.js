@@ -43,9 +43,12 @@ voteDeleteBtn.textContent = 'Delete this vote';
 const userNameSpan = document.getElementById('user');
 
 // Divs
-const voteContainer = document.getElementById('voteContainer');
-const newVoteOptionsDiv = document.getElementById('newVoteOptions');
+const mainContentDiv = document.getElementById('mainContentDiv');
+const voteContainer = document.createElement('div');
+voteContainer.classList.add('row', 'row-cols-1', 'row-cols-md-3', 'g-4');
+voteContainer.id = 'voteContainer';
 
+const newVoteOptionsDiv = document.getElementById('newVoteOptions');
 
 export {
     viewVoteModal,
@@ -77,6 +80,7 @@ export {
     newVoteTitle,
     newVoteDescription,
     userNameSpan,
+    mainContentDiv,
     voteContainer,
     newVoteOptionsDiv
 }

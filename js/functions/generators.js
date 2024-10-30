@@ -42,7 +42,7 @@ const generateNewVoteOptionField = (optionId) => {
     input.id = `newVoteOption${optionId}`;
     input.addEventListener('input', (event) => {
         const result = newVoteOptionEventHandler(event)
-        if (result) {
+        if (result && optionId > 1) {
             addNewVoteSubmitBtn.removeAttribute('disabled');
         }
         else {
