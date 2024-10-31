@@ -8,6 +8,7 @@ import { readLocalStorageLoginStatus, readLocalStorageUserId, readLocalStorageUs
 import { loadUsers } from "../functions/loadUsers.js";
 import { usersData } from "../data/users.js";
 import { viewVoteModal, regForm, regUsername, regPassword1, regFullName, regModal, regSubmitBtn, newVoteForm, voteDeleteBtn, newVoteTitle, newVoteDescription, addVoteModal, mainContentDiv, voteContainer } from "../htmlElements/htmlElements.js";
+import { postVote } from "../functions/apiRequests.js";
 
 const users = loadUsers(usersData);
 
@@ -168,20 +169,10 @@ const newVoteOptionEventHandler = (event) => {
     return result.valid;
 };
 
-const addNewVoteEventHandler = (event, votes) => {
+const addNewVoteEventHandler = () => {
     try {
         if (!readLocalStorageLoginStatus()) throw new Error('You need log in!');
         if (readLocalStorageUserRole() !== 'admin') throw new Error('You are not admin');
-
-        let voteID;
-        if (votes.size === 0) {
-            mainContentDiv.innerHTML = '';
-            mainContentDiv.appendChild(voteContainer);
-            voteID = '0';
-        }
-        else {
-            voteID = String(Number(Array.from(votes.keys()).pop()) + 1);
-        }
 
         const title = newVoteTitle.value;
         const description = newVoteDescription.value;
@@ -190,11 +181,12 @@ const addNewVoteEventHandler = (event, votes) => {
         const options = [];
 
         for (const input of inputs) {
-            options.push({ 'option': input.value, 'voteCount': 0 });
+            options.push(input.value);
         }
 
-        votes.set(voteID, new VoteCard(voteID, title, description, options, voteEventHandler));
-        console.log(votes);
+        const data = { title: title, description: description, options: options};
+        postVote(data);
+
         bootstrap.Modal.getOrCreateInstance(addVoteModal).hide();
         throw { name: 'Info', message: 'Vote added successfully!' };
     }
