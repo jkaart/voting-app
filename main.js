@@ -9,17 +9,16 @@ import { generateVoteCardMap } from "./js/functions/votesMap.js";
 //import { votesData } from "./js/data/votes.js";
 import { readLocalStorageUserRole } from "./js/functions/readLocalStorage.js";
 import { generateNewVoteOptionField } from "./js/functions/generators.js";
-import { getAll } from "./js/functions/apiRequests.js";
+import { getAllVotes } from "./js/functions/apiRequests.js";
 
 // Clear localStorage
 localStorage.removeItem('VotingApp');
 
 let votes;
 
-getAll()
+getAllVotes()
     .then(data => {
         votes = generateVoteCardMap(data);
-        console.log(votes.get('0').options);
         if (votes.size === 0) htmlElements.mainContentDiv.innerHTML = '<div class="d-flex align-items-center justify-content-center vh-100"><h1 class="text-center">No votes available!</h1></div>';
         else {
             htmlElements.mainContentDiv.innerHTML = '';
@@ -28,7 +27,7 @@ getAll()
     });
 
 const syncAll = () => {
-    getAll()
+    getAllVotes()
         .then(data => {
             // Delete removed old votes
             for (const vote of votes) {
