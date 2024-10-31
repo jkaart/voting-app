@@ -2,23 +2,55 @@
 
 import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, newVoteEventHandler, voteEventHandler, addNewVoteEventHandler, deleteVoteEventHandler } from "./js/events/eventHandlers.js";
 import * as htmlElements from "./js/htmlElements/htmlElements.js";
+import { VoteCard } from "./js/classes/VoteCard.js";
 import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
 import { generateVoteCardMap } from "./js/functions/votesMap.js";
-import { votesData } from "./js/data/votes.js";
+//import { votesData } from "./js/data/votes.js";
 import { readLocalStorageUserRole } from "./js/functions/readLocalStorage.js";
 import { generateNewVoteOptionField } from "./js/functions/generators.js";
+import { getAll } from "./js/functions/apiRequests.js";
 
 // Clear localStorage
 localStorage.removeItem('VotingApp');
 
-const votes = generateVoteCardMap(votesData);
-if (votes.length === 0) {
-    htmlElements.mainContentDiv.innerHTML = '';
-}
-else {
-    htmlElements.mainContentDiv.appendChild(htmlElements.voteContainer);
-}
+let votes;
+
+getAll()
+    .then(data => {
+        votes = generateVoteCardMap(data);
+        console.log(votes.get('0').options);
+        if (votes.size === 0) htmlElements.mainContentDiv.innerHTML = '<div class="d-flex align-items-center justify-content-center vh-100"><h1 class="text-center">No votes available!</h1></div>';
+        else {
+            htmlElements.mainContentDiv.innerHTML = '';
+            htmlElements.mainContentDiv.appendChild(htmlElements.voteContainer);
+        }
+    });
+
+const syncAll = () => {
+    getAll()
+        .then(data => {
+            // Delete removed old votes
+            for (const vote of votes) {
+                if (!data.includes(vote.id)) {
+                    votes.delete(vote.id);
+                }
+            }
+            // Load new votes
+            for (const vote of data) {
+                if (!votes.has(vote.id)) {
+                    votes.set(vote.id, new VoteCard(vote.id, vote.title, vote.description, vote.options, voteEventHandler));
+                }
+                else {
+                    const voteCard = votes.get(vote.id);
+                    voteCard.options = vote.options;
+                    voteCard.updateAll();
+                }
+            }
+        });
+};
+
+setInterval(syncAll, 1000);
 
 htmlElements.regFullName.addEventListener('input', (event) => {
     const result = fullNameEventHandler(event);
