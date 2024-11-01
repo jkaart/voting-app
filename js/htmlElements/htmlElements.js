@@ -21,6 +21,8 @@ const regFullName = document.getElementById('regFullName');
 const regUser = document.getElementById('regUsername');
 const regPassword1 = document.getElementById('regPassword1');
 const regPassword2 = document.getElementById('regPassword2');
+const loginUsername = document.getElementById('loginUsername');
+const loginPassword = document.getElementById('loginPassword');
 const newVoteTitle = document.getElementById('newVoteTitle');
 const newVoteDescription = document.getElementById('newVoteDescription');
 
@@ -68,6 +70,8 @@ export {
     regUser,
     regPassword1,
     regPassword2,
+    loginUsername,
+    loginPassword,
     regSubmitBtn,
     regReturnBtn,
     logonBtn,

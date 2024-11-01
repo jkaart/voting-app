@@ -9,8 +9,7 @@ class User {
         this.#userID = userID;
         this.#username = username;
         this.#pwHash = pwHash;
-        this.#role = '';
-        this.role = role;
+        this.#role = role;
         this.name = name;
         this.isLoggedIn = false;
     }

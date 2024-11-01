@@ -14,17 +14,7 @@ import { getAllVotes } from "./js/functions/apiRequests.js";
 // Clear localStorage
 localStorage.removeItem('VotingApp');
 
-let votes;
-
-getAllVotes()
-    .then(data => {
-        votes = generateVoteCardMap(data);
-        if (votes.size === 0) htmlElements.mainContentDiv.innerHTML = '<div class="d-flex align-items-center justify-content-center vh-100"><h1 class="text-center">No votes available!</h1></div>';
-        else {
-            htmlElements.mainContentDiv.innerHTML = '';
-            htmlElements.mainContentDiv.appendChild(htmlElements.voteContainer);
-        }
-    });
+let votes = [];
 
 const syncAll = () => {
     getAllVotes()
@@ -46,10 +36,22 @@ const syncAll = () => {
                     voteCard.updateAll();
                 }
             }
+            console.log('Auto refresh');
         });
 };
 
-setInterval(syncAll, 1000);
+getAllVotes()
+    .then(data => {
+        if (data === undefined) throw new Error('Data undefined');
+            console.log(data);
+            votes = generateVoteCardMap(data);
+            if (votes.size === 0) htmlElements.mainContentDiv.innerHTML = '<div class="d-flex align-items-center justify-content-center vh-100"><h1 class="text-center">No votes available!</h1></div>';
+            else {
+                htmlElements.mainContentDiv.innerHTML = '';
+                htmlElements.mainContentDiv.appendChild(htmlElements.voteContainer);
+            }
+            //setInterval(syncAll, 1000);
+    });
 
 htmlElements.regFullName.addEventListener('input', (event) => {
     const result = fullNameEventHandler(event);

@@ -1,7 +1,8 @@
 import { readLocalStorageUserRole } from "./readLocalStorage.js";
 import { userNameSpan, showRegModal, logoutBtn, logonBtn, loginForm, showAddVoteModalBtn } from "../htmlElements/htmlElements.js";
 
-const login = () => {
+const login = (data) => {
+    localStorage.setItem('VotingApp', JSON.stringify(data));
     // Reset login form;
     loginForm.reset();
 
@@ -24,6 +25,7 @@ const login = () => {
 };
 
 const logout = () => {
+    localStorage.removeItem('VotingApp');
     // Hide logout button
     logoutBtn.classList.add('d-none');
 

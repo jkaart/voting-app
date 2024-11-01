@@ -6,9 +6,10 @@ import { notification } from "../functions/notification.js";
 import { generateVoteForm } from "../functions/generators.js";
 import { readLocalStorageLoginStatus, readLocalStorageUserId, readLocalStorageUserRole } from "../functions/readLocalStorage.js";
 import { loadUsers } from "../functions/loadUsers.js";
+import { loginUser, regNewUser, postNewVote} from "../functions/apiRequests.js";
+import { login, logout } from "../functions/logInAndLogOut.js";
 import { usersData } from "../data/users.js";
-import { viewVoteModal, regForm, regUsername, regPassword1, regFullName, regModal, regSubmitBtn, newVoteForm, voteDeleteBtn, newVoteTitle, newVoteDescription, addVoteModal, mainContentDiv, voteContainer } from "../htmlElements/htmlElements.js";
-import { postVote } from "../functions/apiRequests.js";
+import { viewVoteModal, regForm, regUsername, regPassword1, regFullName, regModal, regSubmitBtn, newVoteForm, voteDeleteBtn, newVoteTitle, newVoteDescription, addVoteModal, mainContentDiv, loginUsername, loginPassword } from "../htmlElements/htmlElements.js";
 
 const users = loadUsers(usersData);
 
@@ -37,32 +38,22 @@ const passwordEventHandler = (event) => {
 
 const regSubmitEventHandler = (event) => {
     event.preventDefault();
-    const userName = regUsername.value;
     try {
-        const result = users.find(({ username }) => username === userName);
-        if (result) throw new Error(`${userName} is already registered!`);
-        else {
-            const role = regForm.querySelector('input[name="regRoleRadio"]:checked').value;
-            const pwHash = md5(regPassword1.value);
-            const name = regFullName.value;
-            const userDataLength = usersData.length;
-            const user = { userID: userDataLength, username: userName, pwHash, role, name };
-            usersData.push(user);
-            users.push(new User(user));
-
-            console.log(usersData);
-            console.log(users);
-            //event.target.submit();
-
-            throw { name: 'Info', message: `${userName} is registered successfully!` };
-        }
+        const userName = regUsername.value;
+        const role = regForm.querySelector('input[name="regRoleRadio"]:checked').value;
+        const pwHash = md5(regPassword1.value);
+        const name = regFullName.value;
+        const user = { username: userName, password: pwHash, role, name };
+        const result = regNewUser(user);
+        console.log(result);
+        // result
+        //     .then(r => notification({name:'info', msg:result.message}))
+        //     .then(r=> notification({name,msg:result.message}));
+        bootstrap.Modal.getOrCreateInstance(regModal).hide();
     }
-    catch ({ name, message }) {
-        notification({ name, msg: message });
-
-        if (name === 'Info') {
-            bootstrap.Modal.getOrCreateInstance(regModal).hide();
-        }
+    catch ({name, message}) {
+        notification({name, msg:message});
+        console.log(`${name}:${message}`);
     }
     finally {
         regForm.reset();
@@ -72,6 +63,9 @@ const regSubmitEventHandler = (event) => {
             element.classList.remove('is-valid');
             if (index === 0) {
                 element.removeAttribute('disabled');
+            }
+            else if (index === 1 || index === 2) {
+                continue;
             }
             else {
                 element.setAttribute('disabled', '');
@@ -83,21 +77,17 @@ const regSubmitEventHandler = (event) => {
 
 const loginEventHandler = (event) => {
     event.preventDefault();
-    const userName = document.getElementById('loginUsername').value;
-    const pwHash = md5(document.getElementById('loginPassword').value);
+    const userName = loginUsername.value;
+    const pwHash = md5(loginPassword.value);
 
     try {
-        const result = users.find(({ username }) => username === userName);
+        const user = { username: userName, password: pwHash };
+        const result = loginUser(user);
+        result
+            .then(result => login(result));
+        console.log(result);
 
-        if (!result) throw new Error('Wrong username!');
-
-        else if (result.pwHash !== pwHash) throw new Error('Wrong password!');
-
-        else {
-            result.logIn();
-
-            throw { name: 'Info', message: `${result.name} has logged in successfully` };
-        }
+        throw {name: 'info', message:'User logged in'};
     }
     catch ({ name, message }) {
         notification({ name, msg: message });
@@ -108,11 +98,8 @@ const loginEventHandler = (event) => {
 };
 
 const logoutEventHandler = () => {
-    const result = users.find(({ userID }) => userID === JSON.parse(localStorage.getItem('VotingApp')).userID);
-    result.logOut();
+    logout();
     notification({ name: 'Info', msg: 'You are logged out' });
-    //window.location.reload();
-
 };
 
 const voteEventHandler = (event, votes) => {
@@ -135,11 +122,11 @@ const voteEventHandler = (event, votes) => {
 
 const openViewVoteModalEventHandler = (voteData) => {
     try {
-        
+
         if (!readLocalStorageLoginStatus()) throw { name: 'Info', message: 'You need log in!' };
         const userId = readLocalStorageUserId();
-        if (userId === null) throw new Error ('UserId missing or it is null');
-        if (readLocalStorageUserRole() === 'user' && voteData.votedUsers.includes(userId)) throw {name: 'Info', message: 'You have already voted this'};
+        if (userId === null) throw new Error('UserId missing or it is null');
+        if (readLocalStorageUserRole() === 'user' && voteData.votedUsers.includes(userId)) throw { name: 'Info', message: 'You have already voted this' };
         const viewVoteModalBody = viewVoteModal.children[0].children[0].children[1];
         const viewVoteModalFooter = viewVoteModal.children[0].children[0].children[2];
         const inputs = generateVoteForm(voteData.options, voteData.id);
@@ -184,11 +171,11 @@ const addNewVoteEventHandler = () => {
             options.push(input.value);
         }
 
-        const data = { title: title, description: description, options: options};
-        postVote(data);
+        const data = { title: title, description: description, options: options };
+        postNewVote(data);
 
         bootstrap.Modal.getOrCreateInstance(addVoteModal).hide();
-        throw { name: 'Info', message: 'Vote added successfully!' };
+        //throw { name: 'Info', message: 'Vote added successfully!' };
     }
     catch ({ name, message }) {
         notification({ name, msg: message });
