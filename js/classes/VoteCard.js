@@ -2,11 +2,14 @@ import { openViewVoteModalEventHandler } from "../events/eventHandlers.js";
 import { calcPercentage } from "../functions/percentage.js";
 import { generateProgressBars } from "../functions/generators.js";
 import { voteContainer } from "../htmlElements/htmlElements.js";
+import { notification } from "../functions/notification.js";
+import { checkTokenFromLocalStorage, readLocalStorage } from "../functions/readLocalStorage.js";
 
 const generateCardContainer = (voteData) => {
     const progressBars = generateProgressBars(voteData.options, voteData.id);
     const cardContainer = document.createElement('div');
     cardContainer.classList.add('col');
+    cardContainer.id = `vote${voteData.id}CardContainer`;
     cardContainer.innerHTML = `
         <div class="bg-light text-dark card">
             <div class="card-header d-flex justify-content-between">
@@ -46,7 +49,7 @@ class VoteCard {
         this.totalVoteCount = calcTotalCount(this.options);
         this.voteContainer = voteContainer;
         this.cardContainer = generateCardContainer(this.voteData);
-        this.cardContainer.children[0].addEventListener('click', () => { openViewVoteModalEventHandler(this.voteData); });
+        this.cardContainer.children[0].addEventListener('click', () => { openViewVoteModalEventHandler(this.id); });
         this.voteContainer.appendChild(this.cardContainer);
         this.cardHeader = this.cardContainer.children[0].children[0];
         this.cardBody = this.cardContainer.children[0].children[1];
@@ -68,10 +71,10 @@ class VoteCard {
 
     doVote(value, userId) {
         if (value === '') return false;
-        const index = this.options.findIndex((element) => element.option === value);
-        this.options[index].voteCount += 1;
-        this.votedUsers.push(userId);
-        this.updateTotalCounter();
+        // const index = this.options.findIndex((element) => element.option === value);
+        // this.options[index].voteCount += 1;
+        // this.votedUsers.push(userId);
+        // this.updateTotalCounter();
         return true;
     }
 

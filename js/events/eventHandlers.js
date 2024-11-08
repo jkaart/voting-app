@@ -1,19 +1,12 @@
 import { validateFullName, validateUsername, validatePassword, validateNewVote, validateNewVoteOption } from "../functions/validate.js";
 import { generateValidateErrorList } from "../functions/validateErrorList.js";
-import { User } from '../classes/User.js';
-import { VoteCard } from "../classes/VoteCard.js";
 import { notification } from "../functions/notification.js";
-import { generateVoteForm } from "../functions/generators.js";
-import { readLocalStorageLoginStatus, readLocalStorageUserId, readLocalStorageUserRole } from "../functions/readLocalStorage.js";
-import { loadUsers } from "../functions/loadUsers.js";
-import { loginUser, regNewUser, postNewVote} from "../functions/apiRequests.js";
+import { readLocalStorage, checkTokenFromLocalStorage } from "../functions/readLocalStorage.js";
+import { loginUser, regNewUser, postNewVote, deleteVote, getVote, votingVote } from "../functions/apiRequests.js";
 import { login, logout } from "../functions/logInAndLogOut.js";
-import { usersData } from "../data/users.js";
-import { viewVoteModal, regForm, regUsername, regPassword1, regFullName, regModal, regSubmitBtn, newVoteForm, voteDeleteBtn, newVoteTitle, newVoteDescription, addVoteModal, mainContentDiv, loginUsername, loginPassword } from "../htmlElements/htmlElements.js";
-
-const users = loadUsers(usersData);
-
-console.log(users);
+import * as htmlElements from "../htmlElements/htmlElements.js";
+import { generateVoteCardMap } from "../functions/votesMap.js";
+import { generateVoteForm } from "../functions/generators.js";
 
 const fullNameEventHandler = (event) => {
     const result = validateFullName(event.target.value);
@@ -39,25 +32,22 @@ const passwordEventHandler = (event) => {
 const regSubmitEventHandler = (event) => {
     event.preventDefault();
     try {
-        const userName = regUsername.value;
-        const role = regForm.querySelector('input[name="regRoleRadio"]:checked').value;
-        const pwHash = md5(regPassword1.value);
-        const name = regFullName.value;
+        const userName = htmlElements.regUsername.value;
+        const role = htmlElements.regForm.querySelector('input[name="regRoleRadio"]:checked').value;
+        const pwHash = md5(htmlElements.regPassword1.value);
+        const name = htmlElements.regFullName.value;
         const user = { username: userName, password: pwHash, role, name };
         const result = regNewUser(user);
         console.log(result);
-        // result
-        //     .then(r => notification({name:'info', msg:result.message}))
-        //     .then(r=> notification({name,msg:result.message}));
-        bootstrap.Modal.getOrCreateInstance(regModal).hide();
+        bootstrap.Modal.getOrCreateInstance(htmlElements.regModal).hide();
     }
-    catch ({name, message}) {
-        notification({name, msg:message});
+    catch ({ name, message }) {
+        notification({ message });
         console.log(`${name}:${message}`);
     }
     finally {
-        regForm.reset();
-        const inputs = regForm.getElementsByTagName('input');
+        htmlElements.regForm.reset();
+        const inputs = htmlElements.regForm.getElementsByTagName('input');
         for (let index = 0; index < inputs.length; index++) {
             const element = inputs[index];
             element.classList.remove('is-valid');
@@ -71,77 +61,85 @@ const regSubmitEventHandler = (event) => {
                 element.setAttribute('disabled', '');
             }
         }
-        regSubmitBtn.setAttribute('disabled', '');
+        htmlElements.regSubmitBtn.setAttribute('disabled', '');
     }
 };
 
 const loginEventHandler = (event) => {
     event.preventDefault();
-    const userName = loginUsername.value;
-    const pwHash = md5(loginPassword.value);
+    const userName = htmlElements.loginUsername.value;
+    const pwHash = md5(htmlElements.loginPassword.value);
 
-    try {
-        const user = { username: userName, password: pwHash };
-        const result = loginUser(user);
-        result
-            .then(result => login(result));
-        console.log(result);
-
-        throw {name: 'info', message:'User logged in'};
-    }
-    catch ({ name, message }) {
-        notification({ name, msg: message });
-    }
-    finally {
-        bootstrap.Modal.getInstance(document.getElementById('logonModal')).hide();
-    }
+    const user = { username: userName, password: pwHash };
+    const result = loginUser(user);
+    result
+        .then(
+            (result) => { login(result); },
+            (error) => { notification(error); },
+        );
+    bootstrap.Modal.getOrCreateInstance(htmlElements.logonModal).hide();
 };
 
 const logoutEventHandler = () => {
     logout();
-    notification({ name: 'Info', msg: 'You are logged out' });
+    notification({ name: 'Info', message: 'You are logged out' });
 };
 
-const voteEventHandler = (event, votes) => {
-    try {
-        const form = event.target.parentElement.previousElementSibling.querySelector('form');
-        const voteId = form.id.split('Vote')[1];
-
-        const vote = votes.get(voteId);
-        const voteValue = form.elements[`vote${voteId}Radios`].value;
-        if (!vote.doVote(voteValue, readLocalStorageUserId())) throw new Error('Choose an option!');
-        if (vote.updateAll()) {
-            bootstrap.Modal.getOrCreateInstance(viewVoteModal).hide();
-            throw { name: 'Info', message: 'Vote registered successfully!' };
+const voteEventHandler = (event) => {
+    // ToDO: need fix
+    const form = event.target.parentElement.previousElementSibling.querySelector('form');
+    const voteId = form.id.split('Vote')[1];
+    const inputs = form.querySelectorAll('input');
+    let voteOptionId = null;
+    for (const input of inputs) {
+        if (input.checked) {
+            voteOptionId = input.id.split('vote')[1];
         }
     }
-    catch ({ name, message }) {
-        notification({ name, msg: message });
+    voteOptionId = voteOptionId.split('Radios')[0];
+    if (voteOptionId !== null) {
+        votingVote(voteId, voteOptionId)
+            .then((response) => { return response; })
+            .then((result) => {
+
+                notification({ result });
+            });
     }
+    else {
+        notification({ name: 'error', message: 'Please select option first' });
+    }
+    bootstrap.Modal.getOrCreateInstance(htmlElements.viewVoteModal).hide();
 };
 
-const openViewVoteModalEventHandler = (voteData) => {
-    try {
+const openViewVoteModalEventHandler = (voteId) => {
 
-        if (!readLocalStorageLoginStatus()) throw { name: 'Info', message: 'You need log in!' };
-        const userId = readLocalStorageUserId();
-        if (userId === null) throw new Error('UserId missing or it is null');
-        if (readLocalStorageUserRole() === 'user' && voteData.votedUsers.includes(userId)) throw { name: 'Info', message: 'You have already voted this' };
-        const viewVoteModalBody = viewVoteModal.children[0].children[0].children[1];
-        const viewVoteModalFooter = viewVoteModal.children[0].children[0].children[2];
-        const inputs = generateVoteForm(voteData.options, voteData.id);
-        if (readLocalStorageUserRole() === 'admin') {
-            viewVoteModalFooter.appendChild(voteDeleteBtn);
-        }
-        else {
-            voteDeleteBtn.remove();
-        }
-        viewVoteModalBody.innerHTML = inputs;
-        bootstrap.Modal.getOrCreateInstance(viewVoteModal).show();
+    const role = readLocalStorage('role');
+    if (role === null) {
+        notification({ error: 'You are not logged in' });
+        return;
     }
-    catch ({ name, message }) {
-        notification({ name, msg: message });
-    }
+    getVote(voteId)
+        .then(response => {
+            console.log(response);
+            if (response.status === 401) {
+                console.log(response);
+                throw new Error(response.statusText);
+            }
+            if (role === 'admin') {
+                htmlElements.viewVoteModalFooter.appendChild(htmlElements.voteDeleteBtn);
+            }
+            else {
+                htmlElements.voteDeleteBtn.remove();
+            }
+            const inputs = generateVoteForm(response.options, voteId);
+            htmlElements.viewVoteModalBody.innerHTML = inputs;
+            bootstrap.Modal.getOrCreateInstance(htmlElements.viewVoteModal).show();
+            return response;
+
+        })
+        .catch(error => {
+            notification(error);
+        });
 };
 
 const newVoteEventHandler = (event) => {
@@ -156,59 +154,49 @@ const newVoteOptionEventHandler = (event) => {
     return result.valid;
 };
 
-const addNewVoteEventHandler = () => {
-    try {
-        if (!readLocalStorageLoginStatus()) throw new Error('You need log in!');
-        if (readLocalStorageUserRole() !== 'admin') throw new Error('You are not admin');
+const addNewVoteEventHandler = (event, votesArray) => {
+    event.preventDefault();
 
-        const title = newVoteTitle.value;
-        const description = newVoteDescription.value;
+    const title = htmlElements.newVoteTitle.value;
+    const description = htmlElements.newVoteDescription.value;
 
-        const inputs = newVoteForm.children[1].getElementsByTagName('input');
-        const options = [];
+    const inputs = htmlElements.newVoteForm.children[1].getElementsByTagName('input');
+    const options = [];
 
-        for (const input of inputs) {
-            options.push(input.value);
-        }
-
-        const data = { title: title, description: description, options: options };
-        postNewVote(data);
-
-        bootstrap.Modal.getOrCreateInstance(addVoteModal).hide();
-        //throw { name: 'Info', message: 'Vote added successfully!' };
+    for (const input of inputs) {
+        options.push(input.value);
     }
-    catch ({ name, message }) {
-        notification({ name, msg: message });
-    }
+
+    const data = { title: title, description: description, options: options };
+    postNewVote(data)
+        .then(response => {
+            console.log('postNewVote response: ', response);
+            if (response.message) {
+                notification({ name: 'info', message: response.message });
+            }
+            if (response.savedVote) {
+                votesArray = generateVoteCardMap([response.savedVote], votesArray);
+                htmlElements.mainContentDiv.innerHTML = '';
+                htmlElements.mainContentDiv.appendChild(htmlElements.voteContainer);
+            }
+        })
+        .catch(error => console.log("postNewData error: ", error));
+        bootstrap.Modal.getOrCreateInstance(htmlElements.addVoteModal).hide();
 };
 
-const deleteVoteEventHandler = (event, votes) => {
-    try {
-        if (!readLocalStorageLoginStatus()) throw new Error('You need log in!');
-        if (readLocalStorageUserRole() !== 'admin') throw new Error('You are not admin');
+const deleteVoteEventHandler = (event, votesMap) => {
+    // ToDO: need fix
+    
+    const form = event.target.parentElement.previousElementSibling.querySelector('form');
+    const voteId = form.id.split('Vote')[1];
+    const response = deleteVote(voteId);
 
-        const form = event.target.parentElement.previousElementSibling.querySelector('form');
-        const voteId = form.id.split('Vote')[1];
 
-        console.log(votes);
-        bootstrap.Modal.getOrCreateInstance(viewVoteModal).hide();
-        const voteCard = votes.get(voteId);
-
+    if (response.status === 204) {
         // Remove the vote from DOM
-        voteCard.cardContainer.remove();
-
-        // delete the vote from map
-        votes.delete(voteId);
-
-        if (votes.size === 0) {
-            mainContentDiv.innerHTML = '<div class="d-flex align-items-center justify-content-center vh-100"><h1 class="text-center">No votes available!</h1></div>';
-        }
-
-        console.log(votes);
-        throw { name: 'Info', message: 'Vote deleted successfully' };
-    }
-    catch ({ name, message }) {
-        notification({ name, msg: message });
+        document.getElementById(`vote${voteId}CardContainer`).remove();
+        bootstrap.Modal.getOrCreateInstance(htmlElements.viewVoteModal).hide();
+        notification({ response });
     }
 };
 

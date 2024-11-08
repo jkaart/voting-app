@@ -3,12 +3,16 @@ const viewVoteModal = document.getElementById('viewVoteModal');
 const regModal = document.getElementById('regModal');
 const showRegModal = document.getElementById('showRegModal');
 const addVoteModal = document.getElementById('addVoteModal');
+const logonModal = document.getElementById('logonModal');
 
-// Bootstrap modal bodys and footers
+// Bootstrap modal headers, bodys and footers
 const regFormModalBody = document.getElementById('regFormModalBody');
 const regInfoModalBody = document.getElementById('regInfoModalBody');
 const regFormModalFooter = document.getElementById('regFormModalFooter');
 const regInfoModalFooter = document.getElementById('regInfoModalFooter');
+const viewVoteModalHeader = document.getElementById('viewVoteModalHeader');
+const viewVoteModalBody = document.getElementById('viewVoteModalBody');
+const viewVoteModalFooter = document.getElementById('viewVoteModalFooter');
 
 // Forms
 const regForm = document.getElementById('regForm');
@@ -59,10 +63,14 @@ export {
     regModal,
     showRegModal,
     addVoteModal,
+    logonModal,
     regFormModalBody,
     regInfoModalBody,
     regFormModalFooter,
     regInfoModalFooter,
+    viewVoteModalHeader,
+    viewVoteModalBody,
+    viewVoteModalFooter,
     regForm,
     loginForm,
     regUsername,

@@ -1,24 +1,34 @@
-const readLocalStorageLoginStatus = () => {
+const checkLocalStorage = () => {
     if (localStorage.getItem('VotingApp') === null) return false;
     const item = JSON.parse(localStorage.getItem('VotingApp'));
     if (item === null) return false;
-    if (item.isLoggedIn === null) return false;
+    return item;
+};
+
+const clearLocalStorage = () => {
+    localStorage.removeItem('VotingApp');
     return true;
 };
 
-const readLocalStorageUserRole = () => {
-    if (localStorage.getItem('VotingApp') === null) return false;
-    const item = JSON.parse(localStorage.getItem('VotingApp'));
-    if (item === null) return false;
-    if (item.role === null) return false;
-    return item.role;
+const checkTokenFromLocalStorage = () => {
+    const token = readLocalStorage('token');
+    console.log(token);
+    if (!token) {
+        return false;
+    }
+    return true;
 };
 
-const readLocalStorageUserId = () => {
-    if (localStorage.getItem('VotingApp') === null) return null;
-    const item = JSON.parse(localStorage.getItem('VotingApp'));
-    if (item === null) return null;
-    return item.userID;
+const readLocalStorage = (key) => {
+    const item = checkLocalStorage();
+    if (!item || item[key] === null) return false;
+    return item[key];
 };
 
-export { readLocalStorageLoginStatus, readLocalStorageUserRole, readLocalStorageUserId };
+const writeLocalStorageUserInfo = (userInfo) => {
+    clearLocalStorage();
+    localStorage.setItem('VotingApp', JSON.stringify(userInfo));
+};
+
+
+export { checkTokenFromLocalStorage, readLocalStorage, writeLocalStorageUserInfo, clearLocalStorage };

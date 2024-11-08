@@ -6,51 +6,55 @@ import { VoteCard } from "./js/classes/VoteCard.js";
 import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
 import { generateVoteCardMap } from "./js/functions/votesMap.js";
-//import { votesData } from "./js/data/votes.js";
-import { readLocalStorageUserRole } from "./js/functions/readLocalStorage.js";
 import { generateNewVoteOptionField } from "./js/functions/generators.js";
 import { getAllVotes } from "./js/functions/apiRequests.js";
+import { readLocalStorage } from "./js/functions/readLocalStorage.js";
+import { login, logout } from "./js/functions/logInAndLogOut.js";
 
-// Clear localStorage
-localStorage.removeItem('VotingApp');
+let votesArray = [];
+const votesMap = new Map();
 
-let votes = [];
+const syncInterval = null;
+const timestamp = Date.now();
+
+const initialLocalStorageCheck = () => {
+    // Todo: need fix
+    if (readLocalStorage('TTL') < timestamp) {
+        logout();
+    }
+    else {
+        const name = readLocalStorage('name');
+        const role = readLocalStorage('role');
+        login({ role, name });
+    }
+};
+//initialLocalStorageCheck();
 
 const syncAll = () => {
-    getAllVotes()
-        .then(data => {
-            // Delete removed old votes
-            for (const vote of votes) {
-                if (!data.includes(vote.id)) {
-                    votes.delete(vote.id);
-                }
-            }
-            // Load new votes
-            for (const vote of data) {
-                if (!votes.has(vote.id)) {
-                    votes.set(vote.id, new VoteCard(vote.id, vote.title, vote.description, vote.options, voteEventHandler));
-                }
-                else {
-                    const voteCard = votes.get(vote.id);
-                    voteCard.options = vote.options;
-                    voteCard.updateAll();
-                }
-            }
-            console.log('Auto refresh');
-        });
+    getAllVotes();
 };
 
 getAllVotes()
-    .then(data => {
-        if (data === undefined) throw new Error('Data undefined');
-            console.log(data);
-            votes = generateVoteCardMap(data);
-            if (votes.size === 0) htmlElements.mainContentDiv.innerHTML = '<div class="d-flex align-items-center justify-content-center vh-100"><h1 class="text-center">No votes available!</h1></div>';
-            else {
-                htmlElements.mainContentDiv.innerHTML = '';
-                htmlElements.mainContentDiv.appendChild(htmlElements.voteContainer);
+    .then(response => {
+        if (response) {
+            console.log(response);
+            votesArray = response;
+            generateVoteCardMap(votesArray, votesMap);
+            htmlElements.mainContentDiv.innerHTML = '';
+            htmlElements.mainContentDiv.appendChild(htmlElements.voteContainer);
+            if (!syncInterval) {
+                //syncInterval = setInterval(syncAll, 10000);
             }
-            //setInterval(syncAll, 1000);
+        }
+        else {
+            htmlElements.mainContentDiv.innerHTML = '<div class="d-flex align-items-center justify-content-center vh-100"><h1 class="text-center">No votes available!</h1></div>';
+            if (syncInterval) {
+                clearInterval(syncInterval);
+            }
+        }
+    })
+    .catch(error => {
+        notification({ name: 'error', message:error.statusText });
     });
 
 htmlElements.regFullName.addEventListener('input', (event) => {
@@ -133,7 +137,7 @@ htmlElements.loginSubmitBtn.addEventListener('click', (event) => {
     loginEventHandler(event);
 });
 
-htmlElements.voteDeleteBtn.addEventListener('click', (event) => { deleteVoteEventHandler(event, votes); });
+htmlElements.voteDeleteBtn.addEventListener('click', (event) => { deleteVoteEventHandler(event, votesArray); });
 
 htmlElements.newVoteTitle.addEventListener('input', (event) => {
     const result = newVoteEventHandler(event);
@@ -158,19 +162,11 @@ htmlElements.newVoteAddOptionBtn.addEventListener('click', () => {
     htmlElements.newVoteOptionsDiv.appendChild(newField);
 });
 
-htmlElements.addNewVoteSubmitBtn.addEventListener('click', (event) => { addNewVoteEventHandler(event, votes); });
+htmlElements.addNewVoteSubmitBtn.addEventListener('click', (event) => addNewVoteEventHandler(event, votesArray));
 
 htmlElements.logoutBtn.addEventListener('click', logoutEventHandler);
 
-htmlElements.voteSubmitBtn.addEventListener('click', (event) => {
-    try {
-        if (!readLocalStorageUserRole()) throw { name: 'Info', message: 'You need log in' };
-        voteEventHandler(event, votes);
-    }
-    catch ({ name, message }) {
-        notification({ name, msg: message });
-    }
-});
+htmlElements.voteSubmitBtn.addEventListener('click', (event) => { voteEventHandler(event); });
 
 htmlElements.addVoteModal.addEventListener('hide.bs.modal', () => {
     htmlElements.newVoteForm.reset();

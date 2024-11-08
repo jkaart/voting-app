@@ -1,31 +1,47 @@
-import { readLocalStorageUserRole } from "./readLocalStorage.js";
 import { userNameSpan, showRegModal, logoutBtn, logonBtn, loginForm, showAddVoteModalBtn } from "../htmlElements/htmlElements.js";
+import { notification } from "./notification.js";
+import { readLocalStorage, writeLocalStorageUserInfo, clearLocalStorage } from "./readLocalStorage.js";
 
-const login = (data) => {
-    localStorage.setItem('VotingApp', JSON.stringify(data));
-    // Reset login form;
-    loginForm.reset();
+const login = (userInfo) => {
+    try {
+        if(userInfo.error) throw new Error(userInfo.error);
 
-    // Show full name of the logged in user in the navbar
-    userNameSpan.textContent = `Welcome ${JSON.parse(localStorage.getItem('VotingApp')).name}`;
-    userNameSpan.classList.remove('d-none');
+        // Reset login form;
+        loginForm.reset();
 
-    // hide register button
-    showRegModal.classList.add('d-none');
+        writeLocalStorageUserInfo(userInfo);
 
-    // Show logout button
-    logoutBtn.classList.remove('d-none');
+        const name = readLocalStorage('name');
+        // Show full name of the logged in user in the navbar
+        if (name) {
+            const role = readLocalStorage('role');
+            userNameSpan.textContent = `Welcome ${name}`;
+            userNameSpan.classList.remove('d-none');
 
-    // Hide logon button
-    logonBtn.classList.add('d-none');
+            // hide register button
+            showRegModal.classList.add('d-none');
 
-    if (readLocalStorageUserRole() === 'admin') {
-        showAddVoteModalBtn.classList.remove('d-none');
+            // Show logout button
+            logoutBtn.classList.remove('d-none');
+
+            // Hide logon button
+            logonBtn.classList.add('d-none');
+
+            if (role === 'admin') {
+                showAddVoteModalBtn.classList.remove('d-none');
+            }
+            throw({ name: 'info', message: 'User logged in' });
+        }
+    }
+    catch (message) {
+        notification(message);
+        console.log(message);
     }
 };
 
 const logout = () => {
-    localStorage.removeItem('VotingApp');
+    clearLocalStorage();
+
     // Hide logout button
     logoutBtn.classList.add('d-none');
 

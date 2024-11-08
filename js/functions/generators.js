@@ -17,12 +17,12 @@ const generateProgressBars = (options) => {
 
 const generateVoteForm = (options, voteId) => {
     let inputs = `<form id='formVote${voteId}'>`;
-
+    console.log(options);
     for (const [key, value] of options.entries()) {
         inputs += `
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="vote${voteId}Radios" id="vote${voteId}Radios${key}" value="${value.option}">
-                <label class="form-check-label" for="vote${voteId}Radios${key}">${value.option}</label>
+                <input class="form-check-input" type="radio" name="vote${value.id}Radios" id="vote${value.id}Radios" value="${value.option}">
+                <label class="form-check-label" for="vote${value.id}Radios">${value.option}</label>
             </div>`;
     }
     inputs += `</form`;
