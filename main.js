@@ -9,6 +9,7 @@ import { generateNewVoteOptionField } from "./js/functions/generators.js";
 import { getAllVotes } from "./js/functions/apiRequests.js";
 import { login } from "./js/functions/logInAndLogOut.js";
 import { showNoVotesText } from "./js/functions/votesMap.js";
+import { addVoteFormFieldReset, regFormFieldReset } from "./js/functions/formReset.js";
 
 let syncInterval = null;
 
@@ -150,28 +151,23 @@ htmlElements.logoutBtn.addEventListener('click', logoutEventHandler);
 htmlElements.voteSubmitBtn.addEventListener('click', (event) => { voteEventHandler(event); });
 
 htmlElements.addVoteModal.addEventListener('hide.bs.modal', () => {
-    htmlElements.newVoteForm.reset();
-    const inputs = htmlElements.newVoteForm.getElementsByTagName('input');
-    for (const [index, input] of Object.entries(inputs)) {
-        input.classList.remove('is-valid', 'is-invalid');
-        if (index === 0) {
-            input.removeAttribute('disabled');
-        }
-        else {
-            input.setAttribute('disabled', '');
-        }
-    }
+    addVoteFormFieldReset();
+});
+
+htmlElements.regModal.addEventListener('hide.bs.modal', () => {
+    regFormFieldReset();
+});
+
+htmlElements.logonModal.addEventListener('hide.bs.modal', () => {
+    htmlElements.loginForm.reset();
+});
+
+htmlElements.logonModal.addEventListener('hide.bs.modal', () => {
+    htmlElements.loginForm.reset();
 });
 
 htmlElements.addVoteModal.addEventListener('show.bs.modal', () => {
-    htmlElements.newVoteOptionsDiv.innerHTML = '';
-    for (let index = 1; index < 3; index++) {
-        const optionField = generateNewVoteOptionField(index);
-        optionField.children[1].setAttribute('disabled', '');
-        htmlElements.newVoteOptionsDiv.appendChild(optionField);
-    }
-    htmlElements.newVoteAddOptionBtn.setAttribute('disabled', '');
-    htmlElements.addNewVoteSubmitBtn.setAttribute('disabled', '');
+    addVoteFormFieldReset();
 });
 
 login();

@@ -9,6 +9,7 @@ import { addNewVoteCardsToMap, removeVoteFromMap, updateVoteCounts } from "../fu
 import { generateVoteForm } from "../functions/generators.js";
 import { errorHandler } from "../functions/errorHandler.js";
 import { Info } from "../classes/Info.js";
+import { regFormFieldReset } from "../functions/formReset.js";
 
 const fullNameEventHandler = (event) => {
     const result = validateFullName(event.target.value);
@@ -33,38 +34,17 @@ const passwordEventHandler = (event) => {
 
 const regSubmitEventHandler = (event) => {
     event.preventDefault();
-    try {
-        const userName = htmlElements.regUsername.value;
-        const role = htmlElements.regForm.querySelector('input[name="regRoleRadio"]:checked').value;
-        const pwHash = md5(htmlElements.regPassword1.value);
-        const name = htmlElements.regFullName.value;
-        const user = { username: userName, password: pwHash, role, name };
-        const result = regNewUser(user);
-        console.log(result);
-        bootstrap.Modal.getOrCreateInstance(htmlElements.regModal).hide();
-    }
-    catch ({ name, message }) {
-        notification({ message });
-        console.log(`${name}:${message}`);
-    }
-    finally {
-        htmlElements.regForm.reset();
-        const inputs = htmlElements.regForm.getElementsByTagName('input');
-        for (let index = 0; index < inputs.length; index++) {
-            const element = inputs[index];
-            element.classList.remove('is-valid');
-            if (index === 0) {
-                element.removeAttribute('disabled');
-            }
-            else if (index === 1 || index === 2) {
-                continue;
-            }
-            else {
-                element.setAttribute('disabled', '');
-            }
-        }
-        htmlElements.regSubmitBtn.setAttribute('disabled', '');
-    }
+    const userName = htmlElements.regUsername.value;
+    const role = htmlElements.regForm.querySelector('input[name="regRoleRadio"]:checked').value;
+    const pwHash = md5(htmlElements.regPassword1.value);
+    const name = htmlElements.regFullName.value;
+    const user = { username: userName, password: pwHash, role, name };
+    regNewUser(user)
+        .then(response => {
+            notification({ name: 'Info', message: response.message });
+            bootstrap.Modal.getOrCreateInstance(htmlElements.regModal).hide();
+        })
+        .catch(() => regFormFieldReset());
 };
 
 const loginEventHandler = (event) => {
@@ -82,7 +62,6 @@ const loginEventHandler = (event) => {
             else {
                 throw new Error('No token in response');
             }
-
         })
         .catch(error => console.log(error));
 
@@ -111,11 +90,13 @@ const voteEventHandler = (event) => {
         if (voteOptionId !== null) {
             votingVote(voteId, voteOptionId)
                 .then(response => {
-                    updateVoteCounts(response)
-                        .then(message => {
-                            notification({ name: 'info', message });
-                        })
-                        .catch(error => console.log("error :", error));
+                    if (response !== undefined) {
+                        updateVoteCounts(response)
+                            .then(message => {
+                                notification({ name: 'info', message });
+                            })
+                            .catch(error => console.log("error :", error));
+                    }
                 });
         }
         else {

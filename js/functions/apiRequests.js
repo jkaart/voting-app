@@ -13,7 +13,12 @@ const fetchRequest = async (request) => {
             if (contentType && contentType.includes('application/json')) {
                 const errorObj = await response.json();
                 if (errorObj.error !== undefined) {
-                    throw new Error(errorObj.error, { cause: 'fetchRequest' });
+                    if (errorObj.error === 'expected `username` to be unique') {
+                        throw new Error('The username is already exist!');
+                    }
+                    else {
+                        throw new Error(errorObj.error, { cause: 'fetchRequest' });
+                    }
                 }
                 else if (errorObj.message !== undefined) {
                     throw new Info(errorObj.message);
