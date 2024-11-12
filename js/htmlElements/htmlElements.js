@@ -48,10 +48,23 @@ voteDeleteBtn.textContent = 'Delete this vote';
 // Spans
 const userNameSpan = document.getElementById('user');
 
+// Headings
+const noVotesFoundError = document.createElement('h2');
+noVotesFoundError.classList.add('text-center');
+noVotesFoundError.textContent = 'No votes available!';
+const noBackendConnectionError = document.createElement('h3');
+noBackendConnectionError.classList.add('text-center');
+noBackendConnectionError.textContent = 'Can not connect to the backend!';
+
 // Divs
+const errorDiv = document.createElement('div');
+errorDiv.classList.add('d-flex', 'flex-column', "align-items-center", "justify-content-center", "vh-100");
+errorDiv.appendChild(noVotesFoundError);
 const mainContentDiv = document.getElementById('mainContentDiv');
+mainContentDiv.appendChild(errorDiv);
+
 const voteContainer = document.createElement('div');
-voteContainer.classList.add('row', 'row-cols-1', 'row-cols-md-2', 'row-cols-xl-3' , 'g-4');
+voteContainer.classList.add('row', 'row-cols-1', 'row-cols-md-2', 'row-cols-xl-3', 'g-4');
 voteContainer.id = 'voteContainer';
 
 const newVoteOptionsDiv = document.getElementById('newVoteOptions');
@@ -98,5 +111,8 @@ export {
     voteContainer,
     newVoteOptionsDiv,
     toastDiv,
-    notificationMsg
+    notificationMsg,
+    errorDiv,
+    noVotesFoundError,
+    noBackendConnectionError
 };

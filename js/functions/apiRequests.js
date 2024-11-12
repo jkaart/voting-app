@@ -1,26 +1,36 @@
-import { notification } from "./notification.js";
-import { checkTokenFromLocalStorage, readLocalStorage } from "./readLocalStorage.js";
+import { checkUserRoleFromLocalStorage, readLocalStorage, readTokenFromLocalStorage } from "./readLocalStorage.js";
+import { errorHandler } from "./errorHandler.js";
+import { Info } from "../classes/Info.js";
 
 const backEndUrl = 'http://localhost:3001/api';
 
 const fetchRequest = async (request) => {
     try {
         const response = await fetch(request);
-        if (response.ok) {
+        const contentType = response.headers.get('content-type');
+        console.log('fetchRequest response: ', response);
+        if (!response.ok) {
+            if (contentType && contentType.includes('application/json')) {
+                const errorObj = await response.json();
+                if (errorObj.error !== undefined) {
+                    throw new Error(errorObj.error, { cause: 'fetchRequest' });
+                }
+                else if (errorObj.message !== undefined) {
+                    throw new Info(errorObj.message);
+                }
+            }
+            // If ContentType is not application/json
+            throw new Error(`${response.status}: ${response.statusText}`);
+        }
+        else if (response.status === 204) {
+            return response;
+        }
+        else {
             const obj = await response.json();
             return obj;
         }
-        else {
-            if (response.status === 404 || response.status === 500) throw new Error(response.statusText);
-            throw new Error(response.status);
-        }
-
     } catch (error) {
-        notification(error);
-
-        console.log(error);
-        return false;
-
+        errorHandler(error);
     }
 };
 
@@ -28,21 +38,18 @@ const getAllVotes = async () => {
     const request = new Request(backEndUrl + '/votes', {
         method: 'GET'
     });
-    const response = fetchRequest(request);
-    console.log(response);
+    const response = await fetchRequest(request);
     return response;
-
 };
 
 const postNewVote = async (data) => {
-    /* const error = checkTokenFromLocalStorage();
-    if (error) {
-        return error;
-    } */
+    checkUserRoleFromLocalStorage(['admin']);
+    const token = readTokenFromLocalStorage();
+
     const request = new Request(backEndUrl + "/vote", {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${readLocalStorage('token')}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
@@ -51,33 +58,33 @@ const postNewVote = async (data) => {
     return response;
 };
 
-const getVote = (voteId) => {
-    const token = readLocalStorage('token');
-    if (token !== null) {
-        const request = new Request(backEndUrl + `/vote/${voteId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-        });
-        const response = fetchRequest(request);
-        return response;
-    }
-    return new Error('Token is null')
+const getVote = async (voteId) => {
+    checkUserRoleFromLocalStorage(['admin', 'user']);
+    const token = readTokenFromLocalStorage();
+    const request = new Request(backEndUrl + `/vote/${voteId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+    });
+    const response = await fetchRequest(request);
+    return response;
 };
 
-const deleteVote = (voteId) => {
+const deleteVote = async (voteId) => {
     const request = new Request(backEndUrl + `/vote/${voteId}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${readLocalStorage('token')}`
         },
     });
-    const response = fetchRequest(request)
-    return response
+
+    const response = await fetchRequest(request);
+    return response;
+
 };
 
-const votingVote = (voteId, voteOptionId) => {
+const votingVote = async (voteId, voteOptionId) => {
     const token = readLocalStorage('token');
     if (token !== null) {
         const request = new Request(backEndUrl + `/voting/${voteId}`, {
@@ -88,12 +95,12 @@ const votingVote = (voteId, voteOptionId) => {
             },
             body: JSON.stringify({ "voteOptionId": voteOptionId })
         });
-        const response = fetchRequest(request);
+        const response = await fetchRequest(request);
         return response;
     }
 };
 
-const regNewUser = (data) => {
+const regNewUser = async (data) => {
     const request = new Request(backEndUrl + "/users", {
         method: 'POST',
         headers: {
@@ -101,11 +108,11 @@ const regNewUser = (data) => {
         },
         body: JSON.stringify(data),
     });
-    const response = fetchRequest(request);
-    return response
+    const response = await fetchRequest(request);
+    return response;
 };
 
-const loginUser = (data) => {
+const loginUser = async (data) => {
     const request = new Request(backEndUrl + "/login", {
         method: 'POST',
         headers: {
@@ -114,7 +121,7 @@ const loginUser = (data) => {
 
         body: JSON.stringify(data),
     });
-    const response = fetchRequest(request);
+    const response = await fetchRequest(request);
     return response;
 };
 

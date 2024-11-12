@@ -2,14 +2,12 @@ import { openViewVoteModalEventHandler } from "../events/eventHandlers.js";
 import { calcPercentage } from "../functions/percentage.js";
 import { generateProgressBars } from "../functions/generators.js";
 import { voteContainer } from "../htmlElements/htmlElements.js";
-import { notification } from "../functions/notification.js";
-import { checkTokenFromLocalStorage, readLocalStorage } from "../functions/readLocalStorage.js";
 
 const generateCardContainer = (voteData) => {
     const progressBars = generateProgressBars(voteData.options, voteData.id);
     const cardContainer = document.createElement('div');
     cardContainer.classList.add('col');
-    cardContainer.id = `vote${voteData.id}CardContainer`;
+    cardContainer.id = `vote${voteData.id}Card`;
     cardContainer.innerHTML = `
         <div class="bg-light text-dark card">
             <div class="card-header d-flex justify-content-between">
@@ -48,12 +46,11 @@ class VoteCard {
         this.votedUsers = [];
         this.totalVoteCount = calcTotalCount(this.options);
         this.voteContainer = voteContainer;
-        this.cardContainer = generateCardContainer(this.voteData);
-        this.cardContainer.children[0].addEventListener('click', () => { openViewVoteModalEventHandler(this.id); });
-        this.voteContainer.appendChild(this.cardContainer);
-        this.cardHeader = this.cardContainer.children[0].children[0];
-        this.cardBody = this.cardContainer.children[0].children[1];
-        this.cardFooter = this.cardContainer.children[0].children[2];
+        this.card = generateCardContainer(this.voteData);
+        this.card.children[0].addEventListener('click', () => { openViewVoteModalEventHandler(this.id); });
+        this.cardHeader = this.card.children[0].children[0];
+        this.cardBody = this.card.children[0].children[1];
+        this.cardFooter = this.card.children[0].children[2];
         this.voteCounterSpans = this.cardBody.querySelectorAll('span.voteCounter');
         this.voteProgressDivs = this.cardBody.querySelectorAll('div.voteProgress');
         this.totalVotesH5 = this.cardHeader.children[1];
@@ -65,18 +62,30 @@ class VoteCard {
         return voteData;
     }
 
+    set voteData({ title, description, options, votedUsers }) {
+        this.title = title;
+        this.description = description;
+        this.options = options;
+        this.votedUsers = votedUsers;
+    }
+
     get id() {
         return this.#id;
     }
 
-    doVote(value, userId) {
-        if (value === '') return false;
-        // const index = this.options.findIndex((element) => element.option === value);
-        // this.options[index].voteCount += 1;
-        // this.votedUsers.push(userId);
-        // this.updateTotalCounter();
+    appendCardToDOM() {
+        this.voteContainer.append(this.card);
+    }
+
+    updateCounts(data) {
+        for (const option of data.options) {
+            const id = this.options.findIndex(obj => obj.id === option.id);
+            this.options[id].voteCount = option.voteCount;
+        }
+        this.updateTotalCounter();
         return true;
     }
+    //this.updateAll();
 
     updateTotalCounter() {
         this.totalVoteCount = calcTotalCount(this.options);
@@ -89,7 +98,9 @@ class VoteCard {
     }
 
     updateProgressBars() {
+        this.totalCount = calcTotalCount(this.options);
         for (const [key, value] of this.options.entries()) {
+            console.log(key, value);
             const percent = calcPercentage(value.voteCount, this.totalVoteCount);
             this.voteProgressDivs[key].setAttribute('aria-valuenow', percent);
             this.voteProgressDivs[key].children[0].style.width = `${percent}%`;
@@ -102,10 +113,9 @@ class VoteCard {
     }
 
     updateAll() {
+        this.updateTotalVotes();
         this.updateCounter();
         this.updateProgressBars();
-        this.updateTotalVotes();
-        return true;
     }
 }
 

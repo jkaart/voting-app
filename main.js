@@ -2,60 +2,42 @@
 
 import { fullNameEventHandler, usernameEventHandler, passwordEventHandler, regSubmitEventHandler, loginEventHandler, logoutEventHandler, newVoteEventHandler, voteEventHandler, addNewVoteEventHandler, deleteVoteEventHandler } from "./js/events/eventHandlers.js";
 import * as htmlElements from "./js/htmlElements/htmlElements.js";
-import { VoteCard } from "./js/classes/VoteCard.js";
 import { notification } from "./js/functions/notification.js";
 import { comparePasswords } from "./js/functions/validate.js";
 import { generateVoteCardMap } from "./js/functions/votesMap.js";
 import { generateNewVoteOptionField } from "./js/functions/generators.js";
 import { getAllVotes } from "./js/functions/apiRequests.js";
-import { readLocalStorage } from "./js/functions/readLocalStorage.js";
-import { login, logout } from "./js/functions/logInAndLogOut.js";
+import { login } from "./js/functions/logInAndLogOut.js";
+import { showNoVotesText } from "./js/functions/votesMap.js";
 
-let votesArray = [];
-const votesMap = new Map();
+let syncInterval = null;
 
-const syncInterval = null;
-const timestamp = Date.now();
-
-const initialLocalStorageCheck = () => {
-    // Todo: need fix
-    if (readLocalStorage('TTL') < timestamp) {
-        logout();
+const autoSyncData = async () => {
+    console.log('Auto sync data');
+    const response = await getAllVotes();
+    console.log(response);
+    if (response === undefined) {
+        htmlElements.mainContentDiv.innerHTML = '';
+        htmlElements.errorDiv.append(htmlElements.noBackendConnectionError);
+        htmlElements.mainContentDiv.appendChild(htmlElements.errorDiv);
+        return;
     }
-    else {
-        const name = readLocalStorage('name');
-        const role = readLocalStorage('role');
-        login({ role, name });
+    if (response.status === 204) {
+        showNoVotesText();
     }
-};
-//initialLocalStorageCheck();
+    else if (response) {
+        await generateVoteCardMap(response);
+        htmlElements.mainContentDiv.innerHTML = '';
+        htmlElements.mainContentDiv.appendChild(htmlElements.voteContainer);
+        notification({ name: 'info', message: 'Auto refresh done!' });
+    }
+    if (!syncInterval) {
+        console.log('setInterval');
+        syncInterval = setInterval(autoSyncData, 30000);
+    }
 
-const syncAll = () => {
-    getAllVotes();
+    return response;
 };
-
-getAllVotes()
-    .then(response => {
-        if (response) {
-            console.log(response);
-            votesArray = response;
-            generateVoteCardMap(votesArray, votesMap);
-            htmlElements.mainContentDiv.innerHTML = '';
-            htmlElements.mainContentDiv.appendChild(htmlElements.voteContainer);
-            if (!syncInterval) {
-                //syncInterval = setInterval(syncAll, 10000);
-            }
-        }
-        else {
-            htmlElements.mainContentDiv.innerHTML = '<div class="d-flex align-items-center justify-content-center vh-100"><h1 class="text-center">No votes available!</h1></div>';
-            if (syncInterval) {
-                clearInterval(syncInterval);
-            }
-        }
-    })
-    .catch(error => {
-        notification({ name: 'error', message:error.statusText });
-    });
 
 htmlElements.regFullName.addEventListener('input', (event) => {
     const result = fullNameEventHandler(event);
@@ -116,7 +98,6 @@ htmlElements.regPassword2.addEventListener('input', (event) => {
         htmlElements.regSubmitBtn.setAttribute('disabled', '');
         event.target.classList.remove('is-valid');
         event.target.classList.add('is-invalid');
-        //span.remove();
     }
 });
 
@@ -137,7 +118,7 @@ htmlElements.loginSubmitBtn.addEventListener('click', (event) => {
     loginEventHandler(event);
 });
 
-htmlElements.voteDeleteBtn.addEventListener('click', (event) => { deleteVoteEventHandler(event, votesArray); });
+htmlElements.voteDeleteBtn.addEventListener('click', (event) => { deleteVoteEventHandler(event); });
 
 htmlElements.newVoteTitle.addEventListener('input', (event) => {
     const result = newVoteEventHandler(event);
@@ -162,7 +143,7 @@ htmlElements.newVoteAddOptionBtn.addEventListener('click', () => {
     htmlElements.newVoteOptionsDiv.appendChild(newField);
 });
 
-htmlElements.addNewVoteSubmitBtn.addEventListener('click', (event) => addNewVoteEventHandler(event, votesArray));
+htmlElements.addNewVoteSubmitBtn.addEventListener('click', (event) => addNewVoteEventHandler(event));
 
 htmlElements.logoutBtn.addEventListener('click', logoutEventHandler);
 
@@ -192,3 +173,6 @@ htmlElements.addVoteModal.addEventListener('show.bs.modal', () => {
     htmlElements.newVoteAddOptionBtn.setAttribute('disabled', '');
     htmlElements.addNewVoteSubmitBtn.setAttribute('disabled', '');
 });
+
+login();
+autoSyncData();

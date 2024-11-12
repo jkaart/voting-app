@@ -6,8 +6,9 @@ const notification = (message) => {
         const name = message.name;
         const msg = message.message;
         notificationMsg.textContent = msg;
+
         notificationMsg.parentElement.classList.add('text-white');
-        if (name.toLowerCase() === 'error') {
+        if (name.toLowerCase() === 'error' || name === 'TypeError') {
             notificationMsg.parentElement.classList.remove('bg-success');
             notificationMsg.parentElement.classList.add('bg-danger');
         }

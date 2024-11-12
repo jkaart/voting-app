@@ -1,21 +1,29 @@
+import { Info } from "../classes/Info.js";
 import { userNameSpan, showRegModal, logoutBtn, logonBtn, loginForm, showAddVoteModalBtn } from "../htmlElements/htmlElements.js";
+import { errorHandler } from "./errorHandler.js";
 import { notification } from "./notification.js";
-import { readLocalStorage, writeLocalStorageUserInfo, clearLocalStorage } from "./readLocalStorage.js";
+import { readLocalStorage, clearLocalStorage } from "./readLocalStorage.js";
 
-const login = (userInfo) => {
+const tokenDecode = () => {
+    const tokenFromLocalStorage = readLocalStorage('token');
+    if (tokenFromLocalStorage !== null) {
+        const arrayOfToken = tokenFromLocalStorage.split('.');
+        const decodedToken = JSON.parse(atob(arrayOfToken[1]));
+        return decodedToken;
+    }
+    return null;
+};
+
+const login = () => {
     try {
-        if(userInfo.error) throw new Error(userInfo.error);
+        const decodedToken = tokenDecode();
+        if (decodedToken !== null) {
 
-        // Reset login form;
-        loginForm.reset();
+            // Reset login form;
+            loginForm.reset();
 
-        writeLocalStorageUserInfo(userInfo);
-
-        const name = readLocalStorage('name');
-        // Show full name of the logged in user in the navbar
-        if (name) {
-            const role = readLocalStorage('role');
-            userNameSpan.textContent = `Welcome ${name}`;
+            // Show full name of the logged in user in the navbar
+            userNameSpan.textContent = `Welcome ${decodedToken.name}`;
             userNameSpan.classList.remove('d-none');
 
             // hide register button
@@ -27,15 +35,17 @@ const login = (userInfo) => {
             // Hide logon button
             logonBtn.classList.add('d-none');
 
-            if (role === 'admin') {
+            if (decodedToken.role === 'admin') {
                 showAddVoteModalBtn.classList.remove('d-none');
             }
-            throw({ name: 'info', message: 'User logged in' });
+            const timestamp = Date.now();
+            const logoutTime = decodedToken.exp * 1000 - timestamp;
+            setTimeout(logout, logoutTime);
+            throw new Info('User logged in');
         }
     }
-    catch (message) {
-        notification(message);
-        console.log(message);
+    catch (error) {
+        errorHandler(error);
     }
 };
 
@@ -58,6 +68,7 @@ const logout = () => {
     showAddVoteModalBtn.classList.add('d-none');
 
     console.log('logout');
+    notification({ name: 'info', message: 'You are logged out!' });
 };
 
-export { login, logout };
+export { login, logout, tokenDecode };

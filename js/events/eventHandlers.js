@@ -1,12 +1,14 @@
 import { validateFullName, validateUsername, validatePassword, validateNewVote, validateNewVoteOption } from "../functions/validate.js";
 import { generateValidateErrorList } from "../functions/validateErrorList.js";
 import { notification } from "../functions/notification.js";
-import { readLocalStorage, checkTokenFromLocalStorage } from "../functions/readLocalStorage.js";
+import { checkUserRoleFromLocalStorage, writeLocalStorageUserInfo } from "../functions/readLocalStorage.js";
 import { loginUser, regNewUser, postNewVote, deleteVote, getVote, votingVote } from "../functions/apiRequests.js";
 import { login, logout } from "../functions/logInAndLogOut.js";
 import * as htmlElements from "../htmlElements/htmlElements.js";
-import { generateVoteCardMap } from "../functions/votesMap.js";
+import { addNewVoteCardsToMap, removeVoteFromMap, updateVoteCounts } from "../functions/votesMap.js";
 import { generateVoteForm } from "../functions/generators.js";
+import { errorHandler } from "../functions/errorHandler.js";
+import { Info } from "../classes/Info.js";
 
 const fullNameEventHandler = (event) => {
     const result = validateFullName(event.target.value);
@@ -71,75 +73,82 @@ const loginEventHandler = (event) => {
     const pwHash = md5(htmlElements.loginPassword.value);
 
     const user = { username: userName, password: pwHash };
-    const result = loginUser(user);
-    result
-        .then(
-            (result) => { login(result); },
-            (error) => { notification(error); },
-        );
+    loginUser(user)
+        .then(response => {
+            if (response.token !== undefined) {
+                writeLocalStorageUserInfo({ token: response.token });
+                login();
+            }
+            else {
+                throw new Error('No token in response');
+            }
+
+        })
+        .catch(error => console.log(error));
+
     bootstrap.Modal.getOrCreateInstance(htmlElements.logonModal).hide();
 };
 
 const logoutEventHandler = () => {
     logout();
-    notification({ name: 'Info', message: 'You are logged out' });
 };
 
+// Event handler for the vote button
 const voteEventHandler = (event) => {
-    // ToDO: need fix
-    const form = event.target.parentElement.previousElementSibling.querySelector('form');
-    const voteId = form.id.split('Vote')[1];
-    const inputs = form.querySelectorAll('input');
-    let voteOptionId = null;
-    for (const input of inputs) {
-        if (input.checked) {
-            voteOptionId = input.id.split('vote')[1];
-        }
-    }
-    voteOptionId = voteOptionId.split('Radios')[0];
-    if (voteOptionId !== null) {
-        votingVote(voteId, voteOptionId)
-            .then((response) => { return response; })
-            .then((result) => {
+    const decodedToken = checkUserRoleFromLocalStorage(['user', 'admin']);
 
-                notification({ result });
+    if (decodedToken !== undefined) {
+        const form = event.target.parentElement.previousElementSibling.querySelector('form');
+        const voteId = form.id.split('Vote')[1];
+        const inputs = form.querySelectorAll('input');
+        let voteOptionId = null;
+        for (const input of inputs) {
+            if (input.checked) {
+                voteOptionId = input.id.split('vote')[1];
+            }
+        }
+        voteOptionId = voteOptionId.split('Radios')[0];
+        if (voteOptionId !== null) {
+            votingVote(voteId, voteOptionId)
+                .then(response => {
+                    updateVoteCounts(response)
+                        .then(message => {
+                            notification({ name: 'info', message });
+                        })
+                        .catch(error => console.log("error :", error));
+                });
+        }
+        else {
+            notification({ name: 'error', message: 'Please select option first' });
+        }
+        bootstrap.Modal.getOrCreateInstance(htmlElements.viewVoteModal).hide();
+    }
+};
+
+// Event handler for the vote card clicks
+const openViewVoteModalEventHandler = (voteId) => {
+    const decodedToken = checkUserRoleFromLocalStorage(['user', 'admin']);
+
+    if (decodedToken !== undefined) {
+        getVote(voteId)
+            .then(response => {
+                if (response !== undefined) {
+                    if (checkUserRoleFromLocalStorage(['admin'], true)) {
+                        htmlElements.viewVoteModalFooter.appendChild(htmlElements.voteDeleteBtn);
+                    }
+                    else {
+                        htmlElements.voteDeleteBtn.remove();
+                    }
+                    const inputs = generateVoteForm(response.options, voteId);
+                    htmlElements.viewVoteModalBody.innerHTML = inputs;
+                    bootstrap.Modal.getOrCreateInstance(htmlElements.viewVoteModal).show();
+                    return response;
+                }
+            })
+            .catch(error => {
+                notification(error);
             });
     }
-    else {
-        notification({ name: 'error', message: 'Please select option first' });
-    }
-    bootstrap.Modal.getOrCreateInstance(htmlElements.viewVoteModal).hide();
-};
-
-const openViewVoteModalEventHandler = (voteId) => {
-
-    const role = readLocalStorage('role');
-    if (role === null) {
-        notification({ error: 'You are not logged in' });
-        return;
-    }
-    getVote(voteId)
-        .then(response => {
-            console.log(response);
-            if (response.status === 401) {
-                console.log(response);
-                throw new Error(response.statusText);
-            }
-            if (role === 'admin') {
-                htmlElements.viewVoteModalFooter.appendChild(htmlElements.voteDeleteBtn);
-            }
-            else {
-                htmlElements.voteDeleteBtn.remove();
-            }
-            const inputs = generateVoteForm(response.options, voteId);
-            htmlElements.viewVoteModalBody.innerHTML = inputs;
-            bootstrap.Modal.getOrCreateInstance(htmlElements.viewVoteModal).show();
-            return response;
-
-        })
-        .catch(error => {
-            notification(error);
-        });
 };
 
 const newVoteEventHandler = (event) => {
@@ -154,7 +163,8 @@ const newVoteOptionEventHandler = (event) => {
     return result.valid;
 };
 
-const addNewVoteEventHandler = (event, votesArray) => {
+// Event handler for add new vote button
+const addNewVoteEventHandler = (event) => {
     event.preventDefault();
 
     const title = htmlElements.newVoteTitle.value;
@@ -170,34 +180,39 @@ const addNewVoteEventHandler = (event, votesArray) => {
     const data = { title: title, description: description, options: options };
     postNewVote(data)
         .then(response => {
-            console.log('postNewVote response: ', response);
             if (response.message) {
                 notification({ name: 'info', message: response.message });
             }
             if (response.savedVote) {
-                votesArray = generateVoteCardMap([response.savedVote], votesArray);
-                htmlElements.mainContentDiv.innerHTML = '';
-                htmlElements.mainContentDiv.appendChild(htmlElements.voteContainer);
+                addNewVoteCardsToMap([response.savedVote]);
             }
         })
         .catch(error => console.log("postNewData error: ", error));
-        bootstrap.Modal.getOrCreateInstance(htmlElements.addVoteModal).hide();
+    bootstrap.Modal.getOrCreateInstance(htmlElements.addVoteModal).hide();
 };
 
-const deleteVoteEventHandler = (event, votesMap) => {
-    // ToDO: need fix
-    
+// Event handler for the delete vote button
+const deleteVoteEventHandler = (event) => {
     const form = event.target.parentElement.previousElementSibling.querySelector('form');
     const voteId = form.id.split('Vote')[1];
-    const response = deleteVote(voteId);
-
-
-    if (response.status === 204) {
-        // Remove the vote from DOM
-        document.getElementById(`vote${voteId}CardContainer`).remove();
-        bootstrap.Modal.getOrCreateInstance(htmlElements.viewVoteModal).hide();
-        notification({ response });
-    }
+    deleteVote(voteId)
+        .then(response => {
+            console.log(response);
+            if (response.ok) {
+                const result = removeVoteFromMap(voteId);
+                if (result) {
+                    document.getElementById(`vote${voteId}Card`).remove();
+                    throw new Info('Vote deleted successfully!');
+                }
+                else {
+                    throw new Error('There is problem to delete this vote!');
+                }
+            }
+        })
+        .catch(error => {
+            bootstrap.Modal.getOrCreateInstance(htmlElements.viewVoteModal).hide();
+            errorHandler(error);
+        });
 };
 
 export {
