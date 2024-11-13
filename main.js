@@ -16,7 +16,7 @@ let syncInterval = null;
 const autoSyncData = async () => {
     console.log('Auto sync data');
     const response = await getAllVotes();
-    console.log(response);
+    //console.log(response);
     if (response === undefined) {
         htmlElements.mainContentDiv.innerHTML = '';
         htmlElements.errorDiv.append(htmlElements.noBackendConnectionError);
@@ -27,9 +27,7 @@ const autoSyncData = async () => {
         showNoVotesText();
     }
     else if (response) {
-        await generateVoteCardMap(response);
-        htmlElements.mainContentDiv.innerHTML = '';
-        htmlElements.mainContentDiv.appendChild(htmlElements.voteContainer);
+        generateVoteCardMap(response);
         notification({ name: 'info', message: 'Auto refresh done!' });
     }
     if (!syncInterval) {
@@ -100,15 +98,6 @@ htmlElements.regPassword2.addEventListener('input', (event) => {
         event.target.classList.remove('is-valid');
         event.target.classList.add('is-invalid');
     }
-});
-
-htmlElements.regReturnBtn.addEventListener('click', () => {
-    htmlElements.regFormModalBody.classList.remove('d-none');
-    htmlElements.regFormModalFooter.classList.remove('d-none');
-
-    htmlElements.regInfoModalBody.classList.add('d-none');
-    htmlElements.regInfoModalFooter.classList.add('d-none');
-    htmlElements.regForm.reset();
 });
 
 htmlElements.regSubmitBtn.addEventListener('click', (event) => {

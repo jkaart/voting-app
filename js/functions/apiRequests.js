@@ -8,7 +8,6 @@ const fetchRequest = async (request) => {
     try {
         const response = await fetch(request);
         const contentType = response.headers.get('content-type');
-        console.log('fetchRequest response: ', response);
         if (!response.ok) {
             if (contentType && contentType.includes('application/json')) {
                 const errorObj = await response.json();

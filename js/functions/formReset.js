@@ -1,10 +1,10 @@
-import { newVoteOptionsDiv, newVoteAddOptionBtn, addNewVoteSubmitBtn, newVoteTitle, newVoteForm, regForm, regSubmitBtn, regFullName, regUsername, regPassword1, regPassword2 } from "../htmlElements/htmlElements.js";
+import { newVoteOptionsDiv, newVoteAddOptionBtn, addNewVoteSubmitBtn, newVoteTitle, regSubmitBtn, regFullName, regUsername, regPassword1, regPassword2 } from "../htmlElements/htmlElements.js";
 import { generateNewVoteOptionField } from "./generators.js";
 
 const addVoteFormFieldReset = () => {
-    newVoteForm.reset();
-
     newVoteTitle.removeAttribute('disabled');
+    newVoteTitle.value = '';
+    newVoteTitle.classList.remove('is-valid', 'is-invalid');
     const errorFields = newVoteTitle.nextElementSibling;
     if (errorFields !== null) {
         errorFields.remove();
@@ -23,32 +23,15 @@ const regFormFieldReset = () => {
     regSubmitBtn.setAttribute('disabled', '');
     const elements = [regFullName, regUsername, regPassword1, regPassword2];
     for (const [index, element] of elements.entries()) {
-            if (index === 0) {
-                element.removeAttribute('disabled');
-            }
-            else {
-                element.setAttribute('disabled', '');
-            }
-            element.value = '';
-            element.classList.remove('is-valid');
-        }
-    }
-
-    /* regForm.reset();
-    const inputs = regForm.getElementsByTagName('input');
-    for (let index = 0; index < inputs.length; index++) {
-        const element = inputs[index];
-        element.classList.remove('is-valid');
         if (index === 0) {
             element.removeAttribute('disabled');
-        }
-        else if (index === 1 || index === 2) {
-            continue;
         }
         else {
             element.setAttribute('disabled', '');
         }
-    } */
-
+        element.value = '';
+        element.classList.remove('is-valid');
+    }
+};
 
 export { addVoteFormFieldReset, regFormFieldReset };

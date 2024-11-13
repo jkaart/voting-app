@@ -36,9 +36,9 @@ const regSubmitEventHandler = (event) => {
     event.preventDefault();
     const userName = htmlElements.regUsername.value;
     const role = htmlElements.regForm.querySelector('input[name="regRoleRadio"]:checked').value;
-    const pwHash = md5(htmlElements.regPassword1.value);
+    const password = htmlElements.regPassword1.value;
     const name = htmlElements.regFullName.value;
-    const user = { username: userName, password: pwHash, role, name };
+    const user = { username: userName, password: password, role, name };
     regNewUser(user)
         .then(response => {
             notification({ name: 'Info', message: response.message });
@@ -50,9 +50,9 @@ const regSubmitEventHandler = (event) => {
 const loginEventHandler = (event) => {
     event.preventDefault();
     const userName = htmlElements.loginUsername.value;
-    const pwHash = md5(htmlElements.loginPassword.value);
+    const password = htmlElements.loginPassword.value;
 
-    const user = { username: userName, password: pwHash };
+    const user = { username: userName, password: password };
     loginUser(user)
         .then(response => {
             if (response.token !== undefined) {
@@ -178,7 +178,6 @@ const deleteVoteEventHandler = (event) => {
     const voteId = form.id.split('Vote')[1];
     deleteVote(voteId)
         .then(response => {
-            console.log(response);
             if (response.ok) {
                 const result = removeVoteFromMap(voteId);
                 if (result) {

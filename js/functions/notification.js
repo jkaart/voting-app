@@ -1,7 +1,6 @@
 import { toastDiv, notificationMsg } from "../htmlElements/htmlElements.js";
 
 const notification = (message) => {
-    console.log(message);
     if (message !== 'undefined') {
         const name = message.name;
         const msg = message.message;

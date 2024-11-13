@@ -1,5 +1,4 @@
 import { VoteCard } from "../classes/VoteCard.js";
-import { voteEventHandler } from "../events/eventHandlers.js";
 import { mainContentDiv, voteContainer, errorDiv } from "../htmlElements/htmlElements.js";
 
 const votesMap = new Map();
@@ -7,14 +6,9 @@ const votesMap = new Map();
 const updateVoteCounts = async (data) => {
     return new Promise((resolve, reject) => {
         const voteCard = votesMap.get(data.id);
-        const result = voteCard.updateCounts(data);
-        if (result) {
-            voteCard.updateAll();
-            resolve(data.message);
-        }
-        else {
-            reject('No result');
-        }
+        voteCard.updateCounts(data);
+        voteCard.updateAll();
+        resolve(data.message);
     });
 };
 
@@ -29,16 +23,19 @@ const addNewVoteCardsToMap = (arrayOfVoteData) => {
                 mainContentDiv.innerHTML = '';
                 mainContentDiv.appendChild(voteContainer);
             }
-            voteCard = new VoteCard(data.id, data.title, data.description, data.options, voteEventHandler);
-            voteCard.appendCardToDOM();
+            voteCard = new VoteCard(data.id, data.title, data.description, data.options, data.voteCreated);
             votesMap.set(data.id, voteCard);
+            voteContainer.appendChild(voteCard.card);
+
             addedVotesCount += 1;
         }
         else {
             voteCard = votesMap.get(data.id);
             voteCard.voteData = { title: data.title, description: data.description, options: data.options, votedUsers: data.votedUsers };
+            //voteCard.updateAll();
             updatedVotesCount += 1;
         }
+        voteCard.updateAll();
     });
 
     console.log('Added votes count: ', addedVotesCount);
@@ -74,7 +71,6 @@ const deleteOldCardsFromMap = (newVoteIds) => {
 
 
 const generateVoteCardMap = async (arrayOfVoteData) => {
-    console.log('Votes map before: ', votesMap);
     const votesMapSize = votesMap.size;
 
     // Get new votes IDs from array
@@ -83,7 +79,6 @@ const generateVoteCardMap = async (arrayOfVoteData) => {
     addNewVoteCardsToMap(arrayOfVoteData);
     deleteOldCardsFromMap(newVoteIds);
 
-    console.log('Votes map after: ', votesMap);
     console.log('Response votes count: ', newVoteIds.size);
     console.log('Old votes count: ', votesMapSize);
 };
