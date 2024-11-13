@@ -2,7 +2,7 @@ import { checkUserRoleFromLocalStorage, readTokenFromLocalStorage } from "./read
 import { errorHandler } from "./errorHandler.js";
 import { Info } from "../classes/Info.js";
 
-const backEndUrl = 'http://localhost:3001/api';
+const backEndUrl = 'https://votebackend-axxw.onrender.com/api';
 
 const fetchRequest = async (request) => {
     try {
@@ -142,6 +142,6 @@ const deleteAccount = async () => {
     const response = await fetchRequest(request);
     return response;
 
-}
+};
 
 export { getAllVotes, postNewVote, getVote, deleteVote, votingVote, regNewUser, loginUser, deleteAccount };
