@@ -1,6 +1,7 @@
 import { Info } from "../classes/Info.js";
-import { userNameSpan, showRegModal, logoutBtn, logonBtn, loginForm, showAddVoteModalBtn } from "../htmlElements/htmlElements.js";
+import { userNameSpan, showRegModal, logoutBtn, logonBtn, loginForm, showAddVoteModalBtn, navMenu } from "../htmlElements/htmlElements.js";
 import { errorHandler } from "./errorHandler.js";
+import { deleteAccountButton } from "./generators.js";
 import { notification } from "./notification.js";
 import { readLocalStorage, clearLocalStorage } from "./readLocalStorage.js";
 
@@ -18,7 +19,8 @@ const login = () => {
     try {
         const decodedToken = tokenDecode();
         if (decodedToken !== null) {
-
+            const deleteAccount = deleteAccountButton();
+            navMenu.prepend(deleteAccount);
             // Reset login form;
             loginForm.reset();
 
@@ -51,6 +53,8 @@ const login = () => {
 
 const logout = () => {
     clearLocalStorage();
+    const deleteButton = document.getElementById("deleteAccount");
+    deleteButton.remove();
 
     // Hide logout button
     logoutBtn.classList.add('d-none');

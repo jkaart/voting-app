@@ -70,6 +70,7 @@ voteContainer.id = 'voteContainer';
 const newVoteOptionsDiv = document.getElementById('newVoteOptions');
 const toastDiv = document.getElementById('toast');
 const notificationMsg = document.getElementById('notificationMsg');
+const navMenu = document.getElementById('navMenu');
 
 export {
     viewVoteModal,
@@ -111,6 +112,7 @@ export {
     voteContainer,
     newVoteOptionsDiv,
     toastDiv,
+    navMenu,
     notificationMsg,
     errorDiv,
     noVotesFoundError,

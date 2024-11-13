@@ -1,4 +1,4 @@
-import { checkUserRoleFromLocalStorage, readLocalStorage, readTokenFromLocalStorage } from "./readLocalStorage.js";
+import { checkUserRoleFromLocalStorage, readTokenFromLocalStorage } from "./readLocalStorage.js";
 import { errorHandler } from "./errorHandler.js";
 import { Info } from "../classes/Info.js";
 
@@ -76,10 +76,12 @@ const getVote = async (voteId) => {
 };
 
 const deleteVote = async (voteId) => {
+    checkUserRoleFromLocalStorage(['admin']);
+    const token = readTokenFromLocalStorage();
     const request = new Request(backEndUrl + `/vote/${voteId}`, {
         method: 'DELETE',
         headers: {
-            'Authorization': `Bearer ${readLocalStorage('token')}`
+            'Authorization': `Bearer ${token}`
         },
     });
 
@@ -89,19 +91,18 @@ const deleteVote = async (voteId) => {
 };
 
 const votingVote = async (voteId, voteOptionId) => {
-    const token = readLocalStorage('token');
-    if (token !== null) {
-        const request = new Request(backEndUrl + `/voting/${voteId}`, {
-            method: 'PATCH',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ "voteOptionId": voteOptionId })
-        });
-        const response = await fetchRequest(request);
-        return response;
-    }
+    checkUserRoleFromLocalStorage(['admin', 'user']);
+    const token = readTokenFromLocalStorage();
+    const request = new Request(backEndUrl + `/voting/${voteId} `, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `Bearer ${token} `,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ "voteOptionId": voteOptionId })
+    });
+    const response = await fetchRequest(request);
+    return response;
 };
 
 const regNewUser = async (data) => {
@@ -129,4 +130,18 @@ const loginUser = async (data) => {
     return response;
 };
 
-export { getAllVotes, postNewVote, getVote, deleteVote, votingVote, regNewUser, loginUser };
+const deleteAccount = async () => {
+    checkUserRoleFromLocalStorage(['admin', 'user']);
+    const token = readTokenFromLocalStorage();
+    const request = new Request(backEndUrl + '/users/', {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+    });
+    const response = await fetchRequest(request);
+    return response;
+
+}
+
+export { getAllVotes, postNewVote, getVote, deleteVote, votingVote, regNewUser, loginUser, deleteAccount };

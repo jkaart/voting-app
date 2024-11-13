@@ -1,4 +1,4 @@
-import { newVoteOptionEventHandler } from "../events/eventHandlers.js";
+import { newVoteOptionEventHandler, deleteAccountEventHandler } from "../events/eventHandlers.js";
 import { addNewVoteSubmitBtn } from "../htmlElements/htmlElements.js";
 
 const generateProgressBars = (options) => {
@@ -28,6 +28,16 @@ const generateVoteForm = (options, voteId) => {
     return inputs;
 };
 
+const deleteAccountButton = () => {
+    const button = document.createElement('button');
+    button.classList.add('btn', 'btn-danger');
+    button.setAttribute('type', 'button');
+    button.innerText = 'Delete account';
+    button.id = 'deleteAccount';
+    button.addEventListener('click', deleteAccountEventHandler);
+    return button;
+};
+
 const generateNewVoteOptionField = (optionId) => {
     const div = document.createElement('div');
     div.classList.add('form-group');
@@ -54,4 +64,4 @@ const generateNewVoteOptionField = (optionId) => {
 };
 
 
-export { generateProgressBars, generateVoteForm, generateNewVoteOptionField };
+export { generateProgressBars, generateVoteForm, generateNewVoteOptionField, deleteAccountButton };

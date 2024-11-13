@@ -2,7 +2,7 @@ import { validateFullName, validateUsername, validatePassword, validateNewVote, 
 import { generateValidateErrorList } from "../functions/validateErrorList.js";
 import { notification } from "../functions/notification.js";
 import { checkUserRoleFromLocalStorage, writeLocalStorageUserInfo } from "../functions/readLocalStorage.js";
-import { loginUser, regNewUser, postNewVote, deleteVote, getVote, votingVote } from "../functions/apiRequests.js";
+import { loginUser, regNewUser, postNewVote, deleteVote, getVote, votingVote, deleteAccount } from "../functions/apiRequests.js";
 import { login, logout } from "../functions/logInAndLogOut.js";
 import * as htmlElements from "../htmlElements/htmlElements.js";
 import { addNewVoteCardsToMap, removeVoteFromMap, updateVoteCounts } from "../functions/votesMap.js";
@@ -48,24 +48,38 @@ const regSubmitEventHandler = (event) => {
 };
 
 const loginEventHandler = (event) => {
-    event.preventDefault();
-    const userName = htmlElements.loginUsername.value;
-    const password = htmlElements.loginPassword.value;
+    try {
+        event.preventDefault();
+        const userName = htmlElements.loginUsername.value;
+        const password = htmlElements.loginPassword.value;
+        if (userName.length < 3  || password.length < 8) throw new Error('No username or password was provided or was too short!');
+        const user = { username: userName, password: password };
+        loginUser(user)
+            .then(response => {
+                if (response !== undefined && response.token !== undefined) {
+                    writeLocalStorageUserInfo({ token: response.token });
+                    login();
+                }
+            });
+    }
+    catch(error) {
+        errorHandler(error);
+    }
+    finally {
+        bootstrap.Modal.getOrCreateInstance(htmlElements.logonModal).hide();
+    }
+};
 
-    const user = { username: userName, password: password };
-    loginUser(user)
+const deleteAccountEventHandler = () => {
+    deleteAccount()
         .then(response => {
-            if (response.token !== undefined) {
-                writeLocalStorageUserInfo({ token: response.token });
-                login();
-            }
-            else {
-                throw new Error('No token in response');
+            if (response) {
+                logout();
+                throw new Info('Account deleted successfully!');
             }
         })
-        .catch(error => console.log(error));
+        .catch(error => errorHandler(error));
 
-    bootstrap.Modal.getOrCreateInstance(htmlElements.logonModal).hide();
 };
 
 const logoutEventHandler = () => {
@@ -208,4 +222,5 @@ export {
     newVoteOptionEventHandler,
     newVoteEventHandler,
     deleteVoteEventHandler,
+    deleteAccountEventHandler,
 };
